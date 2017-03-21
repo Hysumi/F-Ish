@@ -8,9 +8,7 @@ public class Boat : MonoBehaviour {
 
     public BoatType boatType;
     public RodType rodType;
-    public ReelType reelType;
-    public BaitType baitType;
-    public HookType hookType;
+    public HookAndBaitType baitType;
     
     public GameObject player;
     public GameObject LineForce;
@@ -18,9 +16,6 @@ public class Boat : MonoBehaviour {
 
     BoatStatus sBoat = new BoatStatus();
     RodStatus sRod = new RodStatus();
-    ReelStatus sReel = new ReelStatus();
-
-    public float maxThrowForce, minThrowForce;
 
 	void Start ()
     {
@@ -30,7 +25,6 @@ public class Boat : MonoBehaviour {
     void Update ()
     {
         RefreshStatus(); //Teria que atualizar quando há troca de itens
-
         if (!bcontroller.isStopped)
         {
             bcontroller.BoatMovement(this.gameObject, player, sBoat);
@@ -48,14 +42,12 @@ public class Boat : MonoBehaviour {
     {
         sBoat = sBoat.RefreshBoatStatus(boatType);
         sRod = sRod.RefreshRodStatus(rodType);
-        sReel = sReel.RefreshReelStatus(reelType);
     }
 
-    float GradientForce(Material m)
+    void GradientForce(Material m)
     {
         float x = bcontroller.ThrowLine(LineForce, LineTarget, sRod, player.transform.position);
         m.color = new Color(x, 1-x, 0);
-        return x;
     }
 
 

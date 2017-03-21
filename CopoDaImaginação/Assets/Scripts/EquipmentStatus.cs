@@ -13,33 +13,17 @@ public enum RodType
     Level3 = 2
 }
 
-
-public enum ReelType
-{
-    Shallow = 0,
-    Middle = 1,
-    Depth = 2
-}
-
-public enum BaitType
+public enum HookAndBaitType
 {
     Tipo1 = 0,
     Tipo2 = 1,
     Tipo3 = 2
 }
 
-public enum HookType
-{
-    Small = 0,
-    Medium = 1,
-    Large = 2
-}
-
 public struct BoatStatus
 {
     public float dragToMaxSpeed;
     public float rotationSpeed;
-    public float minMovementForce;
     public float maxSpeed;
 
     public BoatStatus RefreshBoatStatus(BoatType b)
@@ -48,15 +32,13 @@ public struct BoatStatus
         switch (b)
         {
             case BoatType.Balanced:
-                bs.rotationSpeed = 60;
-                bs.dragToMaxSpeed = 10;
-                bs.minMovementForce = 2;
-                bs.maxSpeed = 5;
+                bs.rotationSpeed = 120;
+                bs.dragToMaxSpeed = 3.5f;
+                bs.maxSpeed = 7;
                 break;
             case BoatType.Fast:
-                bs.rotationSpeed = 30;
-                bs.dragToMaxSpeed = 7;
-                bs.minMovementForce = 1;
+                bs.rotationSpeed = 90;
+                bs.dragToMaxSpeed = 1.5f;
                 bs.maxSpeed = 10;
                 break;
         }
@@ -78,19 +60,16 @@ public struct RodStatus
         switch (r)
         {
             case RodType.Level1:
-                rs.maxDistance = 3;
+                rs.maxDistance = 1.5f;
                 rs.force = 30;
-                rs.sensibility = 1;
                 break;
             case RodType.Level2:
-                rs.maxDistance = 4;
+                rs.maxDistance = 2;
                 rs.force = 60;
-                rs.sensibility = 2;
                 break;
             case RodType.Level3:
-                rs.maxDistance = 5;
+                rs.maxDistance = 2.5f;
                 rs.force = 100;
-                rs.sensibility = 2;
                 break;
         }
 
@@ -98,54 +77,23 @@ public struct RodStatus
     }
 }
 
-public struct ReelStatus
-{
-    public float maxDepth;
-    public float resistence;
-
-    public ReelStatus RefreshReelStatus (ReelType r)
-    {
-        ReelStatus rs = new ReelStatus();
-
-        switch (r)
-        {
-            case ReelType.Shallow:
-                rs.maxDepth = 1;
-                rs.resistence = 30;
-                break;
-            case ReelType.Middle:
-                rs.maxDepth = 2;
-                rs.resistence = 60;
-                break;
-            case ReelType.Depth:
-                rs.maxDepth = 3;
-                rs.resistence = 60;
-                break;
-        }
-
-        return rs;
-    }
-}
-    
 public struct FishStatus
 {
     public string name;
     //float size;
     //float weight;
 
-    public float resistence;
     public float force;
-    public float depth;
     public float chanceAppear;
 
-    public void resistenceRange(float x)
-    {
-        resistence += Random.Range(-x, x);
-    }
-
-    public void forceRange(float x)
+    public void ForceRange(float x)
     {
         force += Random.Range(-x, x);
+    }
+    
+    public void ChanceRange(float x)
+    {
+        chanceAppear += Random.Range(-x, x);
     }
 }
 

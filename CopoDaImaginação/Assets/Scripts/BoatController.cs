@@ -35,8 +35,8 @@ public class BoatController : MonoBehaviour
             SoftRotation(angle, b.rotationSpeed, boat);
 
             boatDirection = player.transform.position - boat.transform.position;
-            boat.transform.position += boatDirection * Time.deltaTime * DragForce(dragVector, b.dragToMaxSpeed, b.minMovementForce, b.maxSpeed) * b.maxSpeed;
-            dragOrigin += boatDirection * Time.deltaTime * DragForce(dragVector, b.dragToMaxSpeed, b.minMovementForce, b.maxSpeed)*b.maxSpeed;
+            boat.transform.position += boatDirection * Time.deltaTime * DragForce(dragVector, b.dragToMaxSpeed, b.maxSpeed) * b.maxSpeed;
+            dragOrigin += boatDirection * Time.deltaTime * DragForce(dragVector, b.dragToMaxSpeed, b.maxSpeed)*b.maxSpeed;
         }
     }
     
@@ -48,7 +48,7 @@ public class BoatController : MonoBehaviour
         {
             float angle = Mathf.Atan2(dragVector.y, dragVector.x) * Mathf.Rad2Deg;
             angle += 180;
-            throwForce = DragForce(dragVector, r.maxDistance, 0, r.maxDistance);
+            throwForce = DragForce(dragVector, r.maxDistance, r.maxDistance);
             line.transform.localEulerAngles = new Vector3(0, 0, angle);
             line.transform.position = playerPos + new Vector3(0,0,3);
 
@@ -110,13 +110,13 @@ public class BoatController : MonoBehaviour
         return (Vector3.zero);
     }
 
-    float DragForce(Vector3 dragForce, float dragToMax, float minForce, float limit)
+    float DragForce(Vector3 dragForce, float dragToMax, float limit)
     {
-        //MaxMagnitude: Aprox: 14
+        //MaxMagnitude: Aprox: 12 (diagonal)
+        //                     2.5 (horizontal)
+        //                     5 (vertical)
         if (dragForce.magnitude >= dragToMax)
             return 1;
-        else if (dragForce.magnitude < minForce)
-            return 0;
         else
         {
             if (dragForce.magnitude <= 1)
@@ -164,23 +164,4 @@ public class BoatController : MonoBehaviour
     }
 
     #endregion
-
-    //public float BoatMotorForce(Vector3 dragForce, float maxForce, float minForce)
-    // {
-    //     return;
-    // }
-
-    /*
-    Vector3 RotateVector(float angle, Vector3 actualVector)
-    {
-        float sen = Mathf.Sin(angle * Mathf.Deg2Rad);
-        float cos = Mathf.Cos(angle * Mathf.Deg2Rad);
-
-        float newX = actualVector.x * cos - actualVector.y * sen;
-        float newY = actualVector.x * sen + actualVector.y * cos;
-
-        return (new Vector3(newX, newY, 0));
-    }
-    */
-
 }
