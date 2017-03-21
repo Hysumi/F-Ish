@@ -15,7 +15,7 @@ public class FishingSpot : MonoBehaviour {
 	// Update is called once per frame
 	void Update ()
     {
-		
+        Debug.Log(listaPeixes[1].chanceAppear);
 	}
 
 }

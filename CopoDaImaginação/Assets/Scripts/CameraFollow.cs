@@ -79,8 +79,6 @@ public class CameraFollow : MonoBehaviour {
     float smoothLookVelocityX;
     float smoothLookVelocityY;
 
-    float smoothVelocityY;
-
     bool lookAheadStopedX;
     bool lookAheadStopedY;
 
@@ -94,6 +92,7 @@ public class CameraFollow : MonoBehaviour {
     void LateUpdate()
     {
         focusArea.Update(col.bounds);
+
         Vector2 focusPosition = focusArea.centre;
 
         if(focusArea.velocity.x != 0)
@@ -143,6 +142,6 @@ public class CameraFollow : MonoBehaviour {
     void OnDrawGizmos()
     {
         Gizmos.color = new Color(1, 0, 0, 0.5f);
-        Gizmos.DrawCube(focusArea.centre, focusAreaSize);   
+        Gizmos.DrawCube(focusArea.centre, focusAreaSize);
     }
 }

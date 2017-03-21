@@ -50,7 +50,7 @@ public class BoatController : MonoBehaviour
             angle += 180;
             throwForce = DragForce(dragVector, r.maxDistance, r.maxDistance);
             line.transform.localEulerAngles = new Vector3(0, 0, angle);
-            line.transform.position = playerPos + new Vector3(0,0,3);
+            line.transform.position = playerPos + new Vector3(0,0,0);
 
             return (throwForce);
         }

@@ -10,7 +10,9 @@ public class Boat : MonoBehaviour {
     public RodType rodType;
     public HookAndBaitType baitType;
     
+    //GAMBIARRA 1
     public GameObject player;
+
     public GameObject LineForce;
     public GameObject LineTarget;
 
