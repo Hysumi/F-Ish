@@ -38,11 +38,7 @@ public class FishController : MonoBehaviour {
     {
         FillFishList();
         boatArea.center = MainCamera.transform.position;
-        boatArea.size = new Vector3(boatRange.x, boatRange.y, 0);
-
-        //boatArea.position = MainCamera.transform.position;
-        //boatArea.height = boatRange.y;
-        //boatArea.width = boatRange.x;
+        boatArea.size = new Vector2(boatRange.x, boatRange.y);
 
         //GAMBIARRA 2
         for (int i = 0; i < fishSpotList.Length; i++)
@@ -94,8 +90,6 @@ public class FishController : MonoBehaviour {
         {
             if (!fishSpotList[i])
             {
-                bool teste = false;
-
                 //GAMBIARRA 4
                 Vector3 point = new Vector3(Random.Range(-4f, 4f), Random.Range(-15f, 15f), 0);
                 Ray ray = new Ray(point, -Vector3.forward);
@@ -103,14 +97,9 @@ public class FishController : MonoBehaviour {
                 Debug.Log(point);
                 if (boatArea.IntersectRay(ray))
                 {
-                    Debug.Log("PARO PARO");
-                    teste = true;
-
                     if (Random.Range(0, 10) < 6) //60%
                     {
                         //GAMBIARRA3
-                        if (teste)
-                            Debug.Log("OPA PASSOU EIN");
                         point += new Vector3(0, 0, 0.1f);
                         fishSpotList[i] = Instantiate(fishSpot, point, new Quaternion());
                         fishSpotList[i].GetComponent<FishingSpot>().listaPeixes = listaPeixes;
@@ -126,8 +115,6 @@ public class FishController : MonoBehaviour {
                     fishSpotList[i].gameObject.name = i + " SpotFish";
                     spotControl++;
                 }
-                
-                
                 break;
             }
             

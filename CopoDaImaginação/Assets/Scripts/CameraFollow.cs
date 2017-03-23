@@ -64,7 +64,7 @@ public class CameraFollow : MonoBehaviour {
     public Vector2 focusAreaSize;
 
     FocusArea focusArea;
-    BoxCollider col;
+    BoxCollider2D col;
     Boat b;
 
     float currentLookAheadX;
@@ -85,7 +85,7 @@ public class CameraFollow : MonoBehaviour {
     void Start()
     {
         b = target.GetComponent<Boat>();
-        col = target.GetComponent<BoxCollider>();
+        col = target.GetComponent<BoxCollider2D>();
         focusArea = new FocusArea(col.bounds, focusAreaSize);
     }
 
@@ -139,9 +139,9 @@ public class CameraFollow : MonoBehaviour {
         transform.position = (Vector3) focusPosition + Vector3.forward * -10;
     }
 
-    void OnDrawGizmos()
-    {
-        Gizmos.color = new Color(1, 0, 0, 0.5f);
-        Gizmos.DrawCube(focusArea.centre, focusAreaSize);
-    }
+    //void OnDrawGizmos()
+    //{
+    //    Gizmos.color = new Color(1, 0, 0, 0.5f);
+    //    Gizmos.DrawCube(focusArea.centre, focusAreaSize);
+    //}
 }

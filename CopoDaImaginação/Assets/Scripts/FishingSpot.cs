@@ -5,7 +5,8 @@ using UnityEngine;
 public class FishingSpot : MonoBehaviour {
 
     public FishStatus[] listaPeixes;
-
+    GameObject anzol;
+    
     // Use this for initialization
     void Start ()
     {
@@ -15,7 +16,7 @@ public class FishingSpot : MonoBehaviour {
 	// Update is called once per frame
 	void Update ()
     {
-        Debug.Log(listaPeixes[1].chanceAppear);
+       
 	}
 
 }

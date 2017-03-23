@@ -3,7 +3,7 @@
 public class BoatController : MonoBehaviour
 {
     RaycastHit hit;
-    Vector3 dragOrigin;
+    Vector2 dragOrigin;
 
     bool isDragging;
     bool isLineThrow;
@@ -15,14 +15,18 @@ public class BoatController : MonoBehaviour
     [HideInInspector]
     public float directionX, directionY;
     [HideInInspector]
-    public Vector3 boatDirection;
+    public Vector2 boatDirection;
 
     //Variáveis da linha
     float throwForce;
 
+    //Gambiarra: CLICAR NO BARCO
+    Bounds boatArea;
+     
     public void BoatMovement(GameObject boat, GameObject player, BoatStatus b)
     {
-        Vector3 dragVector = AnalogStick();
+        boatArea = boat.GetComponent<BoxCollider2D>().bounds;
+        Vector2 dragVector = AnalogStick();
 
         if (isDragging && !isStopped)
         {
@@ -33,9 +37,10 @@ public class BoatController : MonoBehaviour
             angle += 90;
             
             SoftRotation(angle, b.rotationSpeed, boat);
-
+           
             boatDirection = player.transform.position - boat.transform.position;
-            boat.transform.position += boatDirection * Time.deltaTime * DragForce(dragVector, b.dragToMaxSpeed, b.maxSpeed) * b.maxSpeed;
+            Vector3 newPos = boatDirection * Time.deltaTime * DragForce(dragVector, b.dragToMaxSpeed, b.maxSpeed) * b.maxSpeed;
+            boat.transform.position += newPos;
             dragOrigin += boatDirection * Time.deltaTime * DragForce(dragVector, b.dragToMaxSpeed, b.maxSpeed)*b.maxSpeed;
         }
     }
@@ -43,7 +48,7 @@ public class BoatController : MonoBehaviour
     public float ThrowLine(GameObject line, GameObject target, RodStatus r, Vector3 playerPos)
     {
         Vector3 dragVector = AnalogStick();
-
+        
         if (isDragging)
         {
             float angle = Mathf.Atan2(dragVector.y, dragVector.x) * Mathf.Rad2Deg;
@@ -58,26 +63,24 @@ public class BoatController : MonoBehaviour
         {
             isLineThrow = false;
             throwForce *= r.maxDistance;
-            // isFishing = true;
+            //isFishing = true;
             if (throwForce > 1)
                 Instantiate(target, dragVector.normalized * throwForce + line.transform.position, new Quaternion());
             line.transform.position = playerPos + new Vector3(0, 0, -999);
         }
-
-
         return (0);
     }
 
-    Vector3 AnalogStick()
+    Vector2 AnalogStick()
     {
         if (isDragging)
         {
-            Vector3 dragVector;
-            Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+            Vector2 dragVector;
+            Vector2 mousePosClick = Camera.main.ScreenToWorldPoint(Input.mousePosition);
 
-            dragVector = dragOrigin - ray.origin;
+            dragVector = dragOrigin - mousePosClick;
 
-            Debug.DrawLine(dragOrigin, ray.origin, Color.green);
+            Debug.DrawLine(dragOrigin, mousePosClick, Color.green);
             
             if (Input.GetMouseButtonUp(0))
             {
@@ -94,23 +97,20 @@ public class BoatController : MonoBehaviour
             {
                 isDragging = true;
                 Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-
-                if (Physics.Raycast(ray, out hit))
-                    if (hit.collider.tag == "Player")
-                    {
-                        if (isStopped)
-                            isStopped = false;
-                        else
-                            isStopped = true;
-                    }
-
+                if (boatArea.IntersectRay(ray))
+                {
+                    if (isStopped)
+                        isStopped = false;
+                    else
+                        isStopped = true;
+                }
                 dragOrigin = ray.origin;
             }
         }
-        return (Vector3.zero);
+        return (Vector2.zero);
     }
 
-    float DragForce(Vector3 dragForce, float dragToMax, float limit)
+    float DragForce(Vector2 dragForce, float dragToMax, float limit)
     {
         //MaxMagnitude: Aprox: 12 (diagonal)
         //                     2.5 (horizontal)
@@ -164,4 +164,5 @@ public class BoatController : MonoBehaviour
     }
 
     #endregion
+
 }

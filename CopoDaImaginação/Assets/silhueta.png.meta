@@ -1,12 +1,10 @@
 fileFormatVersion: 2
-guid: 7dcdb56084ed6d247acf0c4d0609cffb
-timeCreated: 1488828040
+guid: 2301326a898f81b44bfa25487ce6d407
+timeCreated: 1490212807
 licenseType: Free
 TextureImporter:
   fileIDToRecycleName:
-    21300000: peixes_0
-    21300002: peixes_1
-    21300004: peixes_2
+    21300000: silhueta_0
   serializedVersion: 4
   mipmaps:
     mipMapMode: 0
@@ -42,7 +40,7 @@ TextureImporter:
   spriteMeshType: 1
   alignment: 0
   spritePivot: {x: 0.5, y: 0.5}
-  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteBorder: {x: 412, y: 0, z: 0, w: 0}
   spritePixelsToUnits: 100
   alphaUsage: 1
   alphaIsTransparency: 1
@@ -105,39 +103,13 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: peixes_0
+      name: silhueta_0
       rect:
         serializedVersion: 2
-        x: 11
-        y: 16
-        width: 187
-        height: 114
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      outline: []
-      tessellationDetail: 0
-    - serializedVersion: 2
-      name: peixes_1
-      rect:
-        serializedVersion: 2
-        x: 210
-        y: 16
-        width: 187
-        height: 114
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      outline: []
-      tessellationDetail: 0
-    - serializedVersion: 2
-      name: peixes_2
-      rect:
-        serializedVersion: 2
-        x: 415
-        y: 16
-        width: 185
-        height: 114
+        x: 433
+        y: 1220
+        width: 121
+        height: 357
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
