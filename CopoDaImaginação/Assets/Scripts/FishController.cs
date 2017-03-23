@@ -11,12 +11,10 @@ public class FishController : MonoBehaviour {
     bool fullSpots = false;
 
     #endregion
-
-    //GAMBIARRA 3
-    public GameObject MainCamera;
+    
     //Rect boatArea;
-    public Vector2 boatRange;
-    Bounds boatArea;
+    public Vector2 boatSummonRange;
+    Bounds boatMaxCameraArea;
 
     #region Fish Variables
 
@@ -37,8 +35,8 @@ public class FishController : MonoBehaviour {
     void Start ()
     {
         FillFishList();
-        boatArea.center = MainCamera.transform.position;
-        boatArea.size = new Vector2(boatRange.x, boatRange.y);
+        boatMaxCameraArea.center = Camera.main.transform.position;
+        boatMaxCameraArea.size = new Vector2(boatSummonRange.x, boatSummonRange.y);
 
         //GAMBIARRA 2
         for (int i = 0; i < fishSpotList.Length; i++)
@@ -62,7 +60,7 @@ public class FishController : MonoBehaviour {
         if (actualTime >= SummonTime)
             FillFishSpotList();
         Temporizador();
-        boatArea.center = MainCamera.transform.position;
+        boatMaxCameraArea.center = Camera.main.transform.position;
 
         int K = Random.Range(0, 10);
         if (Input.GetKeyDown(KeyCode.A))
@@ -95,7 +93,7 @@ public class FishController : MonoBehaviour {
                 Ray ray = new Ray(point, -Vector3.forward);
 
                 Debug.Log(point);
-                if (boatArea.IntersectRay(ray))
+                if (boatMaxCameraArea.IntersectRay(ray))
                 {
                     if (Random.Range(0, 10) < 6) //60%
                     {
@@ -143,10 +141,5 @@ public class FishController : MonoBehaviour {
         listaPeixes[4].name = "Piraiba";
         listaPeixes[4].force = 100;
         listaPeixes[4].chanceAppear = 0.05f;
-    }
-    void OnDrawGizmos()
-    {
-        Gizmos.color = new Color(0, 0, 1, 0.3f);
-        Gizmos.DrawCube(boatArea.center, boatArea.size);
     }
 }

@@ -2,12 +2,20 @@
 
 public class BoatController : MonoBehaviour
 {
-    RaycastHit hit;
+    public enum BoatState
+    {
+        Moving = 0,
+        Stop = 1,
+        Fishing = 2
+    }
+
+    public BoatState boatState = BoatState.Moving;
+
     Vector2 dragOrigin;
 
+    //Bools de controle 
     bool isDragging;
-    bool isLineThrow;
-    bool isFishing;
+    bool isHoldLine = false;
     [HideInInspector]
     public bool isStopped;
 
@@ -20,14 +28,21 @@ public class BoatController : MonoBehaviour
     //Variáveis da linha
     float throwForce;
 
+    //Anzol
+    GameObject anzol;
+    RaycastHit2D anzolRaycastHit;
+
     //Gambiarra: CLICAR NO BARCO
     Bounds boatArea;
-     
+
+    //Bounds da Camera
+    Bounds mainCameraBounds;
+
     public void BoatMovement(GameObject boat, GameObject player, BoatStatus b)
     {
         boatArea = boat.GetComponent<BoxCollider2D>().bounds;
         Vector2 dragVector = AnalogStick();
-
+        
         if (isDragging && !isStopped)
         {
             directionX = Mathf.Sign(boatDirection.x);
@@ -48,25 +63,41 @@ public class BoatController : MonoBehaviour
     public float ThrowLine(GameObject line, GameObject target, RodStatus r, Vector3 playerPos)
     {
         Vector3 dragVector = AnalogStick();
-        
+
         if (isDragging)
         {
+            isHoldLine = true;
             float angle = Mathf.Atan2(dragVector.y, dragVector.x) * Mathf.Rad2Deg;
             angle += 180;
             throwForce = DragForce(dragVector, r.maxDistance, r.maxDistance);
             line.transform.localEulerAngles = new Vector3(0, 0, angle);
             line.transform.position = playerPos + new Vector3(0,0,0);
-
+            
             return (throwForce);
         }
-        else if (isLineThrow && !isFishing)
+        else if (!isHoldLine && !anzol)
         {
-            isLineThrow = false;
-            throwForce *= r.maxDistance;
-            //isFishing = true;
-            if (throwForce > 1)
-                Instantiate(target, dragVector.normalized * throwForce + line.transform.position, new Quaternion());
+            mainCameraBounds.center = Camera.main.transform.position + new Vector3(0,0,10);
+            mainCameraBounds.size = new Vector2(Camera.main.aspect * 2f *Camera.main.orthographicSize, 2f*Camera.main.orthographicSize);
+            anzol = Instantiate(target, dragVector.normalized * r.maxDistance * throwForce + line.transform.position, new Quaternion());
+
+            anzolRaycastHit = Physics2D.CircleCast(anzol.transform.position, 0.1f, Vector2.zero);
+            Bounds anzolBounds = new Bounds(anzol.transform.position, new Vector3(0.2f, 0.2f));
+
+            if (mainCameraBounds.Intersects(anzolBounds))
+            {
+                if (!anzolRaycastHit) //Jogou dentro de uma área visível
+                    boatState = BoatState.Fishing;
+                else  //Jogou o anzol no barco
+                    DestroyImmediate(anzol);
+            }
+            else
+            {
+                Debug.Log("JOGOU LONGE");
+                DestroyImmediate(anzol);
+            }
             line.transform.position = playerPos + new Vector3(0, 0, -999);
+
         }
         return (0);
     }
@@ -84,8 +115,8 @@ public class BoatController : MonoBehaviour
             
             if (Input.GetMouseButtonUp(0))
             {
+                isHoldLine = false;
                 isDragging = false;
-                isLineThrow = true;
             }
             return (dragVector);
         }
@@ -100,9 +131,15 @@ public class BoatController : MonoBehaviour
                 if (boatArea.IntersectRay(ray))
                 {
                     if (isStopped)
+                    {
+                        boatState = BoatState.Moving;
                         isStopped = false;
+                    }
                     else
+                    {
+                        boatState = BoatState.Stop;
                         isStopped = true;
+                    }
                 }
                 dragOrigin = ray.origin;
             }
@@ -165,4 +202,10 @@ public class BoatController : MonoBehaviour
 
     #endregion
 
+
+    void OnDrawGizmos()
+    {
+        Gizmos.color = new Color(0, 0, 1, 0.3f);
+        Gizmos.DrawCube(mainCameraBounds.center, mainCameraBounds.size);
+    }
 }

@@ -19,24 +19,27 @@ public class Boat : MonoBehaviour {
     BoatStatus sBoat = new BoatStatus();
     RodStatus sRod = new RodStatus();
 
-	void Start ()
+    void Start ()
     {
         bcontroller = GetComponent<BoatController>();
+        bcontroller.boatState = 0;
     }
 
     void Update ()
     {
+        switch (bcontroller.boatState)
+        {
+            case BoatController.BoatState.Moving:
+                bcontroller.BoatMovement(this.gameObject, player, sBoat);
+                LineForce.transform.position = new Vector3(0, 0, -100);
+                break;
+            case BoatController.BoatState.Stop:
+                GradientForce(LineForce.GetComponent<Renderer>().material);
+                break;
+            case BoatController.BoatState.Fishing:
+                break;
+        }
         RefreshStatus(); //Teria que atualizar quando há troca de itens
-        if (!bcontroller.isStopped)
-        {
-            bcontroller.BoatMovement(this.gameObject, player, sBoat);
-            LineForce.transform.position = new Vector3(0, 0, -100);
-        }
-        else
-        {
-            GradientForce(LineForce.GetComponent<Renderer>().material);
-        }
-
     }
 
     //Debug, quando tiver UI pra mudar o equip, é só dar refresh na estrutura

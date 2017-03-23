@@ -139,9 +139,9 @@ public class CameraFollow : MonoBehaviour {
         transform.position = (Vector3) focusPosition + Vector3.forward * -10;
     }
 
-    //void OnDrawGizmos()
-    //{
-    //    Gizmos.color = new Color(1, 0, 0, 0.5f);
-    //    Gizmos.DrawCube(focusArea.centre, focusAreaSize);
-    //}
+   void OnDrawGizmos()
+   {
+        Gizmos.color = new Color(1, 0, 0, 0.5f);
+        Gizmos.DrawCube(focusArea.centre, focusAreaSize);
+   }
 }
