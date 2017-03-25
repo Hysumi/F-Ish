@@ -1,0 +1,5 @@
+3/24:
+- Mecânica de puxar o anzol para o barco.
+- Peixes se movem aleatóriamente pelo mapa.
+- Peixes não saem de um determinado range -X~X do rio.
+- Trigger para quando a isca chamou atenção do peixe.

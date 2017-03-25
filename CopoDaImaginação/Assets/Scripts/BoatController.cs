@@ -31,6 +31,9 @@ public class BoatController : MonoBehaviour
     //Anzol
     GameObject anzol;
     RaycastHit2D anzolRaycastHit;
+    RaycastHit2D[] AnzolFishingInfluence;
+    Vector2 lineDirection;
+    Bounds anzolBounds;
 
     //Gambiarra: CLICAR NO BARCO
     Bounds boatArea;
@@ -71,35 +74,57 @@ public class BoatController : MonoBehaviour
             angle += 180;
             throwForce = DragForce(dragVector, r.maxDistance, r.maxDistance);
             line.transform.localEulerAngles = new Vector3(0, 0, angle);
-            line.transform.position = playerPos + new Vector3(0,0,0);
-            
+            line.transform.position = playerPos + new Vector3(0, 0, 0);
+
             return (throwForce);
         }
         else if (!isHoldLine && !anzol)
         {
-            mainCameraBounds.center = Camera.main.transform.position + new Vector3(0,0,10);
-            mainCameraBounds.size = new Vector2(Camera.main.aspect * 2f *Camera.main.orthographicSize, 2f*Camera.main.orthographicSize);
+            mainCameraBounds.center = Camera.main.transform.position + new Vector3(0, 0, 10);
+            mainCameraBounds.size = new Vector2(Camera.main.aspect * 2f * Camera.main.orthographicSize, 2f * Camera.main.orthographicSize);
+
+            lineDirection = dragVector.normalized;
+
             anzol = Instantiate(target, dragVector.normalized * r.maxDistance * throwForce + line.transform.position, new Quaternion());
 
             anzolRaycastHit = Physics2D.CircleCast(anzol.transform.position, 0.1f, Vector2.zero);
-            Bounds anzolBounds = new Bounds(anzol.transform.position, new Vector3(0.2f, 0.2f));
+            anzolBounds = new Bounds(anzol.transform.position, new Vector3(0.2f, 0.2f));
 
             if (mainCameraBounds.Intersects(anzolBounds))
             {
-                if (!anzolRaycastHit) //Jogou dentro de uma área visível
+                if (!anzolRaycastHit)
+                { 
+                    //Não jogou no barco
                     boatState = BoatState.Fishing;
-                else  //Jogou o anzol no barco
+                }
+                else
+                {
+                    //Jogou o anzol no barco
                     DestroyImmediate(anzol);
+                }
             }
-            else
-            {
-                Debug.Log("JOGOU LONGE");
+            else 
+            { 
+                //Jogou além da câmera
                 DestroyImmediate(anzol);
             }
-            line.transform.position = playerPos + new Vector3(0, 0, -999);
+        line.transform.position = playerPos + new Vector3(0, 0, -999);
 
         }
         return (0);
+    }
+
+    public void Fishing()
+    {
+        AnzolFishingInfluence = Physics2D.CircleCastAll(anzol.transform.position, 1.5f, Vector2.zero); //RAIO ESTÁTICO??
+
+        for (int i = 0; i < AnzolFishingInfluence.Length; i++)
+        {
+            if (AnzolFishingInfluence[i].transform.gameObject.tag == "Fish")
+                AnzolFishingInfluence[i].transform.gameObject.GetComponent<FishingSpot>().FishingTrigger(anzol.transform.position);
+        }
+        PullLine();
+
     }
 
     Vector2 AnalogStick()
@@ -162,9 +187,24 @@ public class BoatController : MonoBehaviour
         }
     }
 
+    void PullLine()
+    {
+        float yDragForce = AnalogStick().y;
+        if (yDragForce < 0)
+            yDragForce = 0;
+        anzol.transform.position -= new Vector3(lineDirection.x, lineDirection.y, 0)*yDragForce *Time.deltaTime;
+        anzolBounds.center = anzol.transform.position;
+
+        if(boatArea.Intersects(anzolBounds))
+        {
+            DestroyImmediate(anzol);
+            boatState = BoatState.Stop;
+        }
+    }
+
     #region Rotações
 
-    void SoftRotation(float ang, float rotationSpeed, GameObject g)
+    public void SoftRotation(float ang, float rotationSpeed, GameObject g)
     {
         if (ang < 0)
             ang += 360;
@@ -201,11 +241,4 @@ public class BoatController : MonoBehaviour
     }
 
     #endregion
-
-
-    void OnDrawGizmos()
-    {
-        Gizmos.color = new Color(0, 0, 1, 0.3f);
-        Gizmos.DrawCube(mainCameraBounds.center, mainCameraBounds.size);
-    }
 }

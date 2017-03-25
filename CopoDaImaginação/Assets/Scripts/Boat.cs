@@ -37,6 +37,7 @@ public class Boat : MonoBehaviour {
                 GradientForce(LineForce.GetComponent<Renderer>().material);
                 break;
             case BoatController.BoatState.Fishing:
+                bcontroller.Fishing();
                 break;
         }
         RefreshStatus(); //Teria que atualizar quando há troca de itens

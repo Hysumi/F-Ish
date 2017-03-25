@@ -43,7 +43,7 @@ public class FishController : MonoBehaviour {
         {
             if (!fishSpotList[i])
             {
-                fishSpotList[i] = Instantiate(fishSpot, new Vector3(Random.Range(-4f, 4f), Random.Range(-15f, 15f), 0.1f), new Quaternion());
+                fishSpotList[i] = Instantiate(fishSpot, new Vector3(Random.Range(-4f, 4f), Random.Range(-15f, 15f), 0f), new Quaternion());
                 fishSpotList[i].GetComponent<FishingSpot>().listaPeixes = listaPeixes;
                 fishSpotList[i].gameObject.name = i + " SpotFish";
                 spotControl++;
@@ -56,7 +56,6 @@ public class FishController : MonoBehaviour {
     void Update ()
     {
         //ESTATICO 3
-
         if (actualTime >= SummonTime)
             FillFishSpotList();
         Temporizador();
@@ -98,7 +97,7 @@ public class FishController : MonoBehaviour {
                     if (Random.Range(0, 10) < 6) //60%
                     {
                         //GAMBIARRA3
-                        point += new Vector3(0, 0, 0.1f);
+                        point += new Vector3(0, 0, 0f);
                         fishSpotList[i] = Instantiate(fishSpot, point, new Quaternion());
                         fishSpotList[i].GetComponent<FishingSpot>().listaPeixes = listaPeixes;
                         fishSpotList[i].gameObject.name = i + " SpotFish";
@@ -107,7 +106,7 @@ public class FishController : MonoBehaviour {
                 }
                 else
                 {
-                    point += new Vector3(0, 0, 0.1f);
+                    point += new Vector3(0, 0, 0f);
                     fishSpotList[i] = Instantiate(fishSpot, point, new Quaternion());
                     fishSpotList[i].GetComponent<FishingSpot>().listaPeixes = listaPeixes;
                     fishSpotList[i].gameObject.name = i + " SpotFish";
