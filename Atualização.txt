@@ -3,3 +3,4 @@
 - Peixes se movem aleatóriamente pelo mapa.
 - Peixes não saem de um determinado range -X~X do rio.
 - Trigger para quando a isca chamou atenção do peixe.
+- Peixes vão até a posição da isca.
