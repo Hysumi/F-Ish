@@ -4,3 +4,10 @@
 - Peixes não saem de um determinado range -X~X do rio.
 - Trigger para quando a isca chamou atenção do peixe.
 - Peixes vão até a posição da isca.
+
+3/25:
+
+- Peixes beliscam a isca.
+- Peixes são fisgados.
+- Peixes perdem o foco quando a isca fica longe.
+- Peixes perdem o foco quando outro peixe fisga antes.

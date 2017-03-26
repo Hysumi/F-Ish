@@ -6,7 +6,8 @@ public class BoatController : MonoBehaviour
     {
         Moving = 0,
         Stop = 1,
-        Fishing = 2
+        Fishing = 2,
+        Hooked = 3
     }
 
     public BoatState boatState = BoatState.Moving;
@@ -31,7 +32,7 @@ public class BoatController : MonoBehaviour
     //Anzol
     GameObject anzol;
     RaycastHit2D anzolRaycastHit;
-    RaycastHit2D[] AnzolFishingInfluence;
+    RaycastHit2D[] anzolFishingTrigger;
     Vector2 lineDirection;
     Bounds anzolBounds;
 
@@ -40,6 +41,9 @@ public class BoatController : MonoBehaviour
 
     //Bounds da Camera
     Bounds mainCameraBounds;
+
+    //Variávies do peixe pego
+    GameObject fishingSpot;
 
     public void BoatMovement(GameObject boat, GameObject player, BoatStatus b)
     {
@@ -101,14 +105,16 @@ public class BoatController : MonoBehaviour
                 {
                     //Jogou o anzol no barco
                     DestroyImmediate(anzol);
+                    anzol = null;
                 }
             }
             else 
             { 
                 //Jogou além da câmera
                 DestroyImmediate(anzol);
+                anzol = null;
             }
-        line.transform.position = playerPos + new Vector3(0, 0, -999);
+            line.transform.position = playerPos + new Vector3(0, 0, -999);
 
         }
         return (0);
@@ -116,15 +122,40 @@ public class BoatController : MonoBehaviour
 
     public void Fishing()
     {
-        AnzolFishingInfluence = Physics2D.CircleCastAll(anzol.transform.position, 1.5f, Vector2.zero); //RAIO ESTÁTICO??
+        anzolFishingTrigger = Physics2D.CircleCastAll(anzol.transform.position, 1.5f, Vector2.zero); //RAIO ESTÁTICO??
 
-        for (int i = 0; i < AnzolFishingInfluence.Length; i++)
+        for (int i = 0; i < anzolFishingTrigger.Length; i++)
         {
-            if (AnzolFishingInfluence[i].transform.gameObject.tag == "Fish")
-                AnzolFishingInfluence[i].transform.gameObject.GetComponent<FishingSpot>().FishingTrigger(anzol.transform.position);
-        }
-        PullLine();
+            if (anzolFishingTrigger[i].transform.gameObject.tag == "Fish")
+            {
+                FishingSpot fs = anzolFishingTrigger[i].transform.gameObject.GetComponent<FishingSpot>();
+                fs.FishingTrigger(anzol, anzolBounds);
 
+                if (fs.isHooked)
+                {
+                    fishingSpot = anzolFishingTrigger[i].transform.gameObject;
+                    boatState = BoatState.Hooked;
+                    break;
+                }
+            }
+        }
+
+        if(boatState == BoatState.Hooked)
+        {
+            for (int i = 0; i < anzolFishingTrigger.Length; i++)
+            {
+                GameObject fs = anzolFishingTrigger[i].transform.gameObject;
+                if (fs.GetComponent<FishingSpot>().isTriggered && fs.name != fishingSpot.name)
+                    fs.GetComponent<FishingSpot>().ResetFish();
+            }
+        }
+        else 
+            PullLine();
+    }
+
+    public void FishingBattle()
+    {
+        SelectFishInFishList(fishingSpot.GetComponent<FishingSpot>());
     }
 
     Vector2 AnalogStick()
@@ -155,12 +186,12 @@ public class BoatController : MonoBehaviour
                 Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
                 if (boatArea.IntersectRay(ray))
                 {
-                    if (isStopped)
+                    if (isStopped && !anzol)
                     {
                         boatState = BoatState.Moving;
                         isStopped = false;
                     }
-                    else
+                    else if (!anzol)
                     {
                         boatState = BoatState.Stop;
                         isStopped = true;
@@ -198,7 +229,15 @@ public class BoatController : MonoBehaviour
         if(boatArea.Intersects(anzolBounds))
         {
             DestroyImmediate(anzol);
+            anzol = null;
             boatState = BoatState.Stop;
+        }
+    }
+
+    void SelectFishInFishList(FishingSpot fs)
+    {
+        for (int i = 0; i < fs.listaPeixes.Length; i++)
+        {
         }
     }
 

@@ -39,6 +39,9 @@ public class Boat : MonoBehaviour {
             case BoatController.BoatState.Fishing:
                 bcontroller.Fishing();
                 break;
+            case BoatController.BoatState.Hooked:
+                bcontroller.FishingBattle();
+                break;
         }
         RefreshStatus(); //Teria que atualizar quando há troca de itens
     }

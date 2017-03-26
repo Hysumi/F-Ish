@@ -8,17 +8,22 @@ public class FishingSpot : MonoBehaviour {
     float riverRange = 4.5f;
     bool outOfRange = false;
 
-    Vector3 anzolPos;
+    GameObject anzol;
+    Bounds anzolBounds;
 
     public FishStatus[] listaPeixes;
-    Vector2 fishDirection, fishVector;
+    public Vector2 fishDirection, fishVector;
     GameObject fishHead;
+    Bounds fishBounds;
     BoatController bcontroller;
 
     float angle, fishSpeed;
+    public int hookHits;
 
     //Se tem um anzol chamando atenção
-    bool isTriggered = false;
+    public bool isTriggered = false;
+    bool isKnockBack = false;
+    public bool isHooked = false;
 
     #region Temporizador
 
@@ -32,24 +37,66 @@ public class FishingSpot : MonoBehaviour {
     {
         bcontroller = new BoatController();
         fishHead = transform.FindChild("Head").gameObject;
+        hookHits = Random.Range(0, 5); //0 a 4 mordidas
+        fishBounds.center = fishHead.transform.position;
+        fishBounds.size = this.gameObject.transform.localScale;
 	}
 	
 	// Update is called once per frame
 	void Update ()
     {
-        if(!isTriggered)
+        fishBounds.center = fishHead.transform.position;
+
+        if (!isTriggered && !isHooked)
             Oscioso();
-        else //OPA, achou uma isca
+        else if (!anzol)
+            ResetFish();
+        else//OPA, achou uma isca
         {
-            Vector3 newDirection = (anzolPos - this.gameObject.transform.position).normalized;
-            fishVector = newDirection;
-            fishSpeed = 2; //Pode mudar
-            FishMovement();
+            if (!isHooked && (anzolBounds.Intersects(fishBounds) || isKnockBack))
+            {
+                isKnockBack = true;
+                if (hookHits == 0)
+                    isHooked = true;
+                else KnockBack();
+            }
+            else if (!isHooked)
+            {
+                Vector3 newDirection = (anzol.transform.position - this.gameObject.transform.position).normalized;
+                fishVector = newDirection;
+
+                if (Vector3.Distance(this.gameObject.transform.position, anzol.transform.position) < 0.5f) //Se estiver pronto pra dar o bote
+                    fishSpeed = 30;
+                else fishSpeed = 2; //Pode mudar
+
+                FishMovement();
+            }
         }
 
         Temporizador();
+    }
+    public void KnockBack()
+    {
+        fishSpeed = 2;
+        Vector3 newPos = -fishDirection * Time.deltaTime * Random.Range(0f, 1f) * fishSpeed;
+        this.gameObject.transform.position -= newPos;
+        if (Vector3.Distance(this.gameObject.transform.position, anzol.transform.position) > 0.7f)
+        {
+            isKnockBack = false;
+            hookHits--;
+        }
+    }
 
-        
+    public void FishingTrigger(GameObject a, Bounds anzolB)
+    {
+        isTriggered = true;
+        anzol = a;
+        anzolBounds = anzolB;
+    }
+
+    public void NotTriggered()
+    {
+        isTriggered = false;
     }
 
     void Temporizador()
@@ -62,12 +109,13 @@ public class FishingSpot : MonoBehaviour {
 
     void FishMovement()
     {
-        float angle = Mathf.Atan2(fishVector.y, fishVector.x) * Mathf.Rad2Deg;
+        angle = Mathf.Atan2(fishVector.y, fishVector.x) * Mathf.Rad2Deg;
         angle += 90;
 
         bcontroller.SoftRotation(angle, 50, this.gameObject);
-
+       
         fishDirection = this.gameObject.transform.position - fishHead.transform.position;
+
         Vector3 newPos = fishDirection * Time.deltaTime * Random.Range(0f, 1f) * fishSpeed;
 
         this.gameObject.transform.position -= newPos;
@@ -91,9 +139,17 @@ public class FishingSpot : MonoBehaviour {
         FishMovement();
     }
 
-    public void FishingTrigger(Vector3 anzolPosition)
+    public void ResetFish()
     {
-        isTriggered = true;
-        anzolPos = anzolPosition;
+        isTriggered = false;
+        hookHits = Random.Range(0, 5);
+        fishDirection *= -1;
     }
+    /*
+    void OnDrawGizmos()
+    {
+        Gizmos.color = new Color(1, 0, 0, 0.5f);
+        Gizmos.DrawCube(fishBounds.center, fishBounds.size);
+    }
+    */
 }
