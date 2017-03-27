@@ -145,11 +145,4 @@ public class FishingSpot : MonoBehaviour {
         hookHits = Random.Range(0, 5);
         fishDirection *= -1;
     }
-    /*
-    void OnDrawGizmos()
-    {
-        Gizmos.color = new Color(1, 0, 0, 0.5f);
-        Gizmos.DrawCube(fishBounds.center, fishBounds.size);
-    }
-    */
 }

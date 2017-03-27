@@ -11,6 +11,13 @@ public class BoatController : MonoBehaviour
     }
 
     public BoatState boatState = BoatState.Moving;
+    public float FishingBonusChance;
+    public bool isDay;
+    public int ambient;
+    public string fishName;
+    public float distanceToFlee;
+    public float fleeSpeed;
+    public float forceDecrement;
 
     Vector2 dragOrigin;
 
@@ -44,6 +51,10 @@ public class BoatController : MonoBehaviour
 
     //Variávies do peixe pego
     GameObject fishingSpot;
+    bool selected = false;
+    Vector3 fishOrigin;
+    int selectedFish;
+    float originalFishResistence, actualFishForce;
 
     public void BoatMovement(GameObject boat, GameObject player, BoatStatus b)
     {
@@ -145,17 +156,66 @@ public class BoatController : MonoBehaviour
             for (int i = 0; i < anzolFishingTrigger.Length; i++)
             {
                 GameObject fs = anzolFishingTrigger[i].transform.gameObject;
-                if (fs.GetComponent<FishingSpot>().isTriggered && fs.name != fishingSpot.name)
-                    fs.GetComponent<FishingSpot>().ResetFish();
+                if(fs.tag != "Player")
+                    if (fs.GetComponent<FishingSpot>().isTriggered && fs.name != fishingSpot.name)
+                        fs.GetComponent<FishingSpot>().ResetFish();
             }
         }
         else 
             PullLine();
     }
 
-    public void FishingBattle()
+    public void FishingBattle(RodStatus rs)
     {
-        SelectFishInFishList(fishingSpot.GetComponent<FishingSpot>());
+        AnalogStick();
+
+        if (!selected)
+        {
+            SelectFishInFishList(fishingSpot.GetComponent<FishingSpot>());
+            fishOrigin = fishingSpot.transform.position;
+            originalFishResistence = fishingSpot.GetComponent<FishingSpot>().listaPeixes[selectedFish].force;
+            actualFishForce = fishingSpot.GetComponent<FishingSpot>().listaPeixes[selectedFish].force;
+        }
+
+        Vector2 fishDirection = (this.gameObject.transform.position - fishingSpot.transform.position).normalized;
+        fishDirection *= -1;
+
+        anzol.transform.position = fishingSpot.GetComponentInChildren<Transform>().position + new Vector3(fishDirection.x, fishDirection.y) / 4;
+        float fishAngle = Mathf.Atan2(fishDirection.y, fishDirection.x) * Mathf.Rad2Deg;
+        fishAngle += 90;
+        SoftRotation(fishAngle, 200, fishingSpot);
+
+        if (!isDragging)
+        {
+            actualFishForce += Time.deltaTime * forceDecrement;
+
+            if (actualFishForce >= originalFishResistence)
+            {
+                fishingSpot.transform.position += Time.deltaTime * new Vector3(fishDirection.x, fishDirection.y) * fleeSpeed;
+                actualFishForce = originalFishResistence;
+            }
+            else
+                fishingSpot.transform.position += Time.deltaTime * new Vector3(fishDirection.x, fishDirection.y) * fleeSpeed/2;
+                
+            if (Vector3.Distance(fishingSpot.transform.position, fishOrigin) > distanceToFlee)
+            {
+                DestroyImmediate(fishingSpot);
+                fishingSpot = null;
+                DestroyImmediate(anzol);
+                anzol = null;
+                boatState = BoatState.Stop;
+                selected = false;
+            }
+        }
+        else
+        {
+            if(rs.force > actualFishForce)
+                PullLine();
+            else
+            {
+                actualFishForce -= Time.deltaTime * forceDecrement;
+            }
+        }
     }
 
     Vector2 AnalogStick()
@@ -190,11 +250,13 @@ public class BoatController : MonoBehaviour
                     {
                         boatState = BoatState.Moving;
                         isStopped = false;
+                        isDragging = false;
                     }
                     else if (!anzol)
                     {
                         boatState = BoatState.Stop;
                         isStopped = true;
+                        isDragging = false;
                     }
                 }
                 dragOrigin = ray.origin;
@@ -223,22 +285,72 @@ public class BoatController : MonoBehaviour
         float yDragForce = AnalogStick().y;
         if (yDragForce < 0)
             yDragForce = 0;
-        anzol.transform.position -= new Vector3(lineDirection.x, lineDirection.y, 0)*yDragForce *Time.deltaTime;
+        anzol.transform.position -= new Vector3(lineDirection.x, lineDirection.y, 0)*yDragForce/10 *Time.deltaTime;
+        if(fishingSpot)
+            fishingSpot.transform.position -= new Vector3(lineDirection.x, lineDirection.y, 0) * yDragForce * Time.deltaTime / 10; //DIVIDE NO CHUTE
         anzolBounds.center = anzol.transform.position;
 
         if(boatArea.Intersects(anzolBounds))
         {
             DestroyImmediate(anzol);
+            DestroyImmediate(fishingSpot);
+            fishingSpot = null;
             anzol = null;
             boatState = BoatState.Stop;
+            isDragging = false;
         }
+
     }
 
     void SelectFishInFishList(FishingSpot fs)
     {
+        float sumChance = CheckFishTypeCatchChance(fs);
+        float rdm = Random.Range(0f, sumChance);
+        float actualChance = 0;
+      
         for (int i = 0; i < fs.listaPeixes.Length; i++)
         {
+            actualChance += fs.listaPeixes[i].chanceAppear;
+            if (rdm < actualChance)
+            {
+                fishName = fs.listaPeixes[i].name;
+                selectedFish = i;
+                //Debug.Log(fs.listaPeixes[i].name + " " + rdm + " " + actualChance + " " + sumChance);
+                break;
+            }
         }
+
+        selected = true;
+    }
+
+    float CheckFishTypeCatchChance(FishingSpot fs)
+    {
+        float chance = 0;
+
+        for (int i = 0; i < fs.listaPeixes.Length; i++)
+        {
+            for (int j = 0; j < fs.listaPeixes[i].hookType.Length; j++)
+            {
+                if (fs.listaPeixes[i].hookType[j] == (int)this.gameObject.GetComponent<Boat>().baitType)
+                {
+                    fs.listaPeixes[i].chanceAppear += FishingBonusChance;
+                    break;
+                }
+                else if (j + 1 == fs.listaPeixes[i].hookType.Length) //Se não for a isca
+                {
+                    fs.listaPeixes[i].chanceAppear -= FishingBonusChance;
+                }
+            }
+
+            if (fs.listaPeixes[i].ambient == ambient)
+                fs.listaPeixes[i].chanceAppear += FishingBonusChance;
+            if (fs.listaPeixes[i].isDay == isDay)
+                fs.listaPeixes[i].chanceAppear += FishingBonusChance;
+            else fs.listaPeixes[i].chanceAppear -= FishingBonusChance;
+
+            chance += fs.listaPeixes[i].chanceAppear;
+        }
+        return (chance);
     }
 
     #region Rotações

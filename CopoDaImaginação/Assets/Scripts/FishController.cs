@@ -91,7 +91,6 @@ public class FishController : MonoBehaviour {
                 Vector3 point = new Vector3(Random.Range(-4f, 4f), Random.Range(-15f, 15f), 0);
                 Ray ray = new Ray(point, -Vector3.forward);
 
-                Debug.Log(point);
                 if (boatMaxCameraArea.IntersectRay(ray))
                 {
                     if (Random.Range(0, 10) < 6) //60%
@@ -121,24 +120,46 @@ public class FishController : MonoBehaviour {
     void FillFishList()
     {
         //ESTATICO 1
-        listaPeixes[0].name = "Corvina";
+        listaPeixes[0].name = "Level 1";
         listaPeixes[0].force = 10;
         listaPeixes[0].chanceAppear = 0.7f;
+        listaPeixes[0].isDay = true;
+        listaPeixes[0].hookType = new int[2];
+        listaPeixes[0].hookType[0] = 0;
+        listaPeixes[0].hookType[1] = 1;
+        listaPeixes[0].ambient = 0;
 
-        listaPeixes[1].name = "Jacundá";
+        listaPeixes[1].name = "Level 2";
         listaPeixes[1].force = 20;
         listaPeixes[1].chanceAppear = 0.4f;
+        listaPeixes[1].isDay = false;
+        listaPeixes[1].hookType = new int[1];
+        listaPeixes[1].hookType[0] = 2;
+        listaPeixes[1].ambient = 0;
 
-        listaPeixes[2].name = "Pacu";
+        listaPeixes[2].name = "Level 3";
         listaPeixes[2].force = 60;
         listaPeixes[2].chanceAppear = 0.25f;
+        listaPeixes[2].isDay = true;
+        listaPeixes[2].hookType = new int[2];
+        listaPeixes[2].hookType[0] = 0;
+        listaPeixes[2].hookType[1] = 2;
+        listaPeixes[2].ambient = 1;
 
-        listaPeixes[3].name = "Dourado";
+        listaPeixes[3].name = "Level 4";
         listaPeixes[3].force = 80;
         listaPeixes[3].chanceAppear = 0.1f;
+        listaPeixes[3].isDay = true;
+        listaPeixes[3].hookType = new int[1];
+        listaPeixes[3].hookType[0] = 2;
+        listaPeixes[3].ambient = 1;
 
-        listaPeixes[4].name = "Piraiba";
+        listaPeixes[4].name = "Level 5";
         listaPeixes[4].force = 100;
         listaPeixes[4].chanceAppear = 0.05f;
+        listaPeixes[4].isDay = false;
+        listaPeixes[4].hookType = new int[1];
+        listaPeixes[4].hookType[0] = 1;
+        listaPeixes[4].ambient = 2;
     }
 }

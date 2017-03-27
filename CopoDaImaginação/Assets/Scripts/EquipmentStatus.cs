@@ -61,7 +61,7 @@ public struct RodStatus
         {
             case RodType.Level1:
                 rs.maxDistance = 1.5f;
-                rs.force = 30;
+                rs.force = 5;
                 break;
             case RodType.Level2:
                 rs.maxDistance = 2;
@@ -85,5 +85,8 @@ public struct FishStatus
 
     public float force;
     public float chanceAppear;
+    public bool isDay;
+    public int[] hookType;
+    public int ambient;
 }
 

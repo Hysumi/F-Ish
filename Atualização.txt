@@ -11,3 +11,12 @@
 - Peixes são fisgados.
 - Peixes perdem o foco quando a isca fica longe.
 - Peixes perdem o foco quando outro peixe fisga antes.
+
+3/26:
+
+- Seleciona qual peixe foi fisgado.
+- Aumenta ou diminui probabilidade de acordo com o ambiente, dia ou noite ou tipo de isca.
+- Consegue puxar o peixe
+
+PS: Pesca Quase Funciona, tem um bug que eu vi uma vez e naõ entendi;
+    Refinar a Pesca...
