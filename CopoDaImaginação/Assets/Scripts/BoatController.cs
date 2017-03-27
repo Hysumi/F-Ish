@@ -18,6 +18,7 @@ public class BoatController : MonoBehaviour
     public float distanceToFlee;
     public float fleeSpeed;
     public float forceDecrement;
+    public float holdRange;
 
     Vector2 dragOrigin;
 
@@ -54,7 +55,8 @@ public class BoatController : MonoBehaviour
     bool selected = false;
     Vector3 fishOrigin;
     int selectedFish;
-    float originalFishResistence, actualFishForce;
+    float originalFishResistence, actualFishResistence;
+    float originalReelResistence, actualReelResistence;
 
     public void BoatMovement(GameObject boat, GameObject player, BoatStatus b)
     {
@@ -167,14 +169,18 @@ public class BoatController : MonoBehaviour
 
     public void FishingBattle(RodStatus rs)
     {
-        AnalogStick();
+
+        Vector3 stick = AnalogStick();
+        Debug.Log("HoldRange: " + stick.y + " FishResistence: " + actualFishResistence + " ReelResistence: " + actualReelResistence);
 
         if (!selected)
         {
             SelectFishInFishList(fishingSpot.GetComponent<FishingSpot>());
             fishOrigin = fishingSpot.transform.position;
             originalFishResistence = fishingSpot.GetComponent<FishingSpot>().listaPeixes[selectedFish].force;
-            actualFishForce = fishingSpot.GetComponent<FishingSpot>().listaPeixes[selectedFish].force;
+            actualFishResistence = fishingSpot.GetComponent<FishingSpot>().listaPeixes[selectedFish].force;
+            actualReelResistence = rs.reelResistence;
+            originalReelResistence = rs.reelResistence;
         }
 
         Vector2 fishDirection = (this.gameObject.transform.position - fishingSpot.transform.position).normalized;
@@ -185,20 +191,21 @@ public class BoatController : MonoBehaviour
         fishAngle += 90;
         SoftRotation(fishAngle, 200, fishingSpot);
 
-        if (!isDragging)
+        if (!isDragging || actualReelResistence <= 0)
         {
-            actualFishForce += Time.deltaTime * forceDecrement;
+            actualFishResistence += Time.deltaTime * forceDecrement;
 
-            if (actualFishForce >= originalFishResistence)
+            if (actualFishResistence >= originalFishResistence)
             {
                 fishingSpot.transform.position += Time.deltaTime * new Vector3(fishDirection.x, fishDirection.y) * fleeSpeed;
-                actualFishForce = originalFishResistence;
+                actualFishResistence = originalFishResistence;
             }
             else
-                fishingSpot.transform.position += Time.deltaTime * new Vector3(fishDirection.x, fishDirection.y) * fleeSpeed/2;
-                
-            if (Vector3.Distance(fishingSpot.transform.position, fishOrigin) > distanceToFlee)
+                fishingSpot.transform.position += Time.deltaTime * new Vector3(fishDirection.x, fishDirection.y) * fleeSpeed / 2;
+
+            if (Vector3.Distance(fishingSpot.transform.position, fishOrigin) > distanceToFlee || actualReelResistence <= 0)
             {
+                Debug.Log("Entrou");
                 DestroyImmediate(fishingSpot);
                 fishingSpot = null;
                 DestroyImmediate(anzol);
@@ -206,14 +213,20 @@ public class BoatController : MonoBehaviour
                 boatState = BoatState.Stop;
                 selected = false;
             }
+
         }
         else
         {
-            if(rs.force > actualFishForce)
+            if(rs.force > actualFishResistence)
                 PullLine();
+            else if (stick.y <= holdRange)
+            {
+                actualFishResistence -= Time.deltaTime * forceDecrement;
+            }
             else
             {
-                actualFishForce -= Time.deltaTime * forceDecrement;
+                actualFishResistence -= Time.deltaTime * forceDecrement*1.5f; //tá tretando com o peixe
+                actualReelResistence -= Time.deltaTime * forceDecrement;
             }
         }
     }
@@ -302,6 +315,10 @@ public class BoatController : MonoBehaviour
 
     }
 
+    void ResetFishBattle() //Colocar no PullLine e no Caso quando ele foge
+    {
+
+    }
     void SelectFishInFishList(FishingSpot fs)
     {
         float sumChance = CheckFishTypeCatchChance(fs);

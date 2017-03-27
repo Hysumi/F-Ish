@@ -20,3 +20,9 @@
 
 PS: Pesca Quase Funciona, tem um bug que eu vi uma vez e naõ entendi;
     Refinar a Pesca...
+
+3/27:
+
+- Precisa debugar algumas situações
+- Falta adicionar a função "ResetFishBattle"
+- Após isso, calibrar e a mecânica estará pronta.

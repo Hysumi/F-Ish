@@ -50,8 +50,8 @@ public struct BoatStatus
 public struct RodStatus
 {
     public float maxDistance;
-    public float sensibility;
     public float force;
+    public float reelResistence;
 
     public RodStatus RefreshRodStatus(RodType r)
     {
@@ -62,14 +62,17 @@ public struct RodStatus
             case RodType.Level1:
                 rs.maxDistance = 1.5f;
                 rs.force = 5;
+                rs.reelResistence = 20;
                 break;
             case RodType.Level2:
                 rs.maxDistance = 2;
                 rs.force = 60;
+                rs.reelResistence = 40;
                 break;
             case RodType.Level3:
                 rs.maxDistance = 20f;
                 rs.force = 100;
+                rs.reelResistence = 60;
                 break;
         }
 
