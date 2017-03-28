@@ -26,3 +26,26 @@ PS: Pesca Quase Funciona, tem um bug que eu vi uma vez e naõ entendi;
 - Precisa debugar algumas situações
 - Falta adicionar a função "ResetFishBattle"
 - Após isso, calibrar e a mecânica estará pronta.
+
+3/28:
+
+- Falta debugar e calibrar
+- Falta adicionar o lixo
+- Falta colocar influência do barco nos peixes
+
+Como Jogar:
+1)Andar com o barco.
+- Clicar e arrastar, vai criar um analógico a partir do ponto de click.
+2)Inicio da pesca.
+- Clicar no barco para começar a pescar.
+- Se clicar novamente no barco, o barco pode se mover novamente.
+- Clicar e arrastar para ter um gradiente de força, mirando no alvo desejado.
+3)Pesca
+- Os peixes serão atraídos pela isca.
+- Eles poderão dar algumas mordidas antes de fisgar.
+4)Batalha com o peixe
+- A vara tem uma força e resistência, assim como o peixe.
+- Só é possível puxar o peixe para o barco se ele estiver cansado (ForçaVara > ResistenciaPeixe)
+- Se tentar puxar um peixe que não está cansado, a resistência da vara diminui e o peixe não sai do lugar. A resistência do peixe diminui mais que o normal dessa forma. Se a resistência da vara zerar, o peixe foge.
+- Para cansar o peixe, basta segurar sem puxar, a resistência da vara não irá diminuir dessa forma.
+ 

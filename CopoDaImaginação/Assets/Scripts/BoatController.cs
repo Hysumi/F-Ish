@@ -204,30 +204,30 @@ public class BoatController : MonoBehaviour
                 fishingSpot.transform.position += Time.deltaTime * new Vector3(fishDirection.x, fishDirection.y) * fleeSpeed / 2;
 
             if (Vector3.Distance(fishingSpot.transform.position, fishOrigin) > distanceToFlee || actualReelResistence <= 0)
-            {
-                Debug.Log("Entrou");
-                DestroyImmediate(fishingSpot);
-                fishingSpot = null;
-                DestroyImmediate(anzol);
-                anzol = null;
-                boatState = BoatState.Stop;
-                selected = false;
-            }
+                ResetFishBattle();
 
         }
         else
         {
-            if(rs.force > actualFishResistence)
-                PullLine();
-            else if (stick.y <= holdRange)
+            if (rs.force > actualFishResistence && stick.y > holdRange)
             {
-                actualFishResistence -= Time.deltaTime * forceDecrement;
+                PullLine();
+                actualFishResistence += Time.deltaTime * forceDecrement;
+            }
+            else if (rs.force <= actualFishResistence && stick.y > holdRange)
+            {
+                actualFishResistence -= Time.deltaTime * forceDecrement * 1.5f; //tá tretando com o peixe
+                actualReelResistence -= Time.deltaTime * forceDecrement;
+                if (actualFishResistence <= 0)
+                    actualFishResistence = 0;
             }
             else
             {
-                actualFishResistence -= Time.deltaTime * forceDecrement*1.5f; //tá tretando com o peixe
-                actualReelResistence -= Time.deltaTime * forceDecrement;
+                actualFishResistence -= Time.deltaTime * forceDecrement;
+                if (actualFishResistence <= 0)
+                    actualFishResistence = 0;
             }
+           
         }
     }
 
@@ -303,22 +303,22 @@ public class BoatController : MonoBehaviour
             fishingSpot.transform.position -= new Vector3(lineDirection.x, lineDirection.y, 0) * yDragForce * Time.deltaTime / 10; //DIVIDE NO CHUTE
         anzolBounds.center = anzol.transform.position;
 
-        if(boatArea.Intersects(anzolBounds))
-        {
-            DestroyImmediate(anzol);
-            DestroyImmediate(fishingSpot);
-            fishingSpot = null;
-            anzol = null;
-            boatState = BoatState.Stop;
-            isDragging = false;
-        }
+        if (boatArea.Intersects(anzolBounds))
+            ResetFishBattle();
 
     }
 
     void ResetFishBattle() //Colocar no PullLine e no Caso quando ele foge
     {
-
+        DestroyImmediate(fishingSpot);
+        fishingSpot = null;
+        DestroyImmediate(anzol);
+        anzol = null;
+        boatState = BoatState.Stop;
+        selected = false;
+        isDragging = false;
     }
+    
     void SelectFishInFishList(FishingSpot fs)
     {
         float sumChance = CheckFishTypeCatchChance(fs);
