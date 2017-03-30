@@ -12,11 +12,11 @@ public class Boat : MonoBehaviour {
     
     //GAMBIARRA 1
     public GameObject player;
-
     public GameObject LineForce;
     public GameObject LineTarget;
 
-    BoatStatus sBoat = new BoatStatus();
+    [HideInInspector]
+    public BoatStatus sBoat = new BoatStatus();
     RodStatus sRod = new RodStatus();
 
     void Start ()

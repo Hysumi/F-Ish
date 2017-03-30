@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System.Collections.Generic;
+using UnityEngine;
 
 public class BoatController : MonoBehaviour
 {
@@ -19,6 +20,7 @@ public class BoatController : MonoBehaviour
     public float fleeSpeed;
     public float forceDecrement;
     public float holdRange;
+    public List<FishStatus> capturedFishList = new List<FishStatus>();
 
     Vector2 dragOrigin;
 
@@ -57,6 +59,7 @@ public class BoatController : MonoBehaviour
     int selectedFish;
     float originalFishResistence, actualFishResistence;
     float originalReelResistence, actualReelResistence;
+    int actualBoatCapacity = 0;
 
     public void BoatMovement(GameObject boat, GameObject player, BoatStatus b)
     {
@@ -171,7 +174,7 @@ public class BoatController : MonoBehaviour
     {
 
         Vector3 stick = AnalogStick();
-        Debug.Log("HoldRange: " + stick.y + " FishResistence: " + actualFishResistence + " ReelResistence: " + actualReelResistence);
+        //Debug.Log("HoldRange: " + stick.y + " FishResistence: " + actualFishResistence + " ReelResistence: " + actualReelResistence);
 
         if (!selected)
         {
@@ -187,6 +190,7 @@ public class BoatController : MonoBehaviour
         fishDirection *= -1;
 
         anzol.transform.position = fishingSpot.GetComponentInChildren<Transform>().position + new Vector3(fishDirection.x, fishDirection.y) / 4;
+        lineDirection = (anzol.transform.position - this.gameObject.transform.position).normalized;
         float fishAngle = Mathf.Atan2(fishDirection.y, fishDirection.x) * Mathf.Rad2Deg;
         fishAngle += 90;
         SoftRotation(fishAngle, 200, fishingSpot);
@@ -303,9 +307,36 @@ public class BoatController : MonoBehaviour
             fishingSpot.transform.position -= new Vector3(lineDirection.x, lineDirection.y, 0) * yDragForce * Time.deltaTime / 10; //DIVIDE NO CHUTE
         anzolBounds.center = anzol.transform.position;
 
-        if (boatArea.Intersects(anzolBounds))
-            ResetFishBattle();
+        if (boatArea.Intersects(anzolBounds)) //Pegou um peixe
+        {
+            if (boatState == BoatState.Hooked)
+            {
+                actualBoatCapacity += fishingSpot.GetComponent<FishingSpot>().listaPeixes[selectedFish].inventoryWeight;
 
+                if (actualBoatCapacity > this.gameObject.GetComponent<Boat>().sBoat.maxCapacity)
+                {
+                    Debug.Log("Lotou");
+                    //APRESENTAR A LISTA DE PEIXES, ESCOLHER E DELETAR O PEIXE
+                   
+                }
+                else
+                {
+                    capturedFishList.Add(fishingSpot.GetComponent<FishingSpot>().listaPeixes[selectedFish]);
+                    foreach (FishStatus f in capturedFishList)
+                    {
+                        Debug.Log(f.name);
+                    }
+                }
+                ResetFishBattle();
+            }
+            else
+            {
+                DestroyImmediate(anzol);
+                anzol = null;
+                boatState = BoatState.Stop;
+                isDragging = false;
+            }
+        }
     }
 
     void ResetFishBattle() //Colocar no PullLine e no Caso quando ele foge

@@ -128,6 +128,7 @@ public class FishController : MonoBehaviour {
         listaPeixes[0].hookType[0] = 0;
         listaPeixes[0].hookType[1] = 1;
         listaPeixes[0].ambient = 0;
+        listaPeixes[0].inventoryWeight = 2;
 
         listaPeixes[1].name = "Level 2";
         listaPeixes[1].force = 20;
@@ -136,6 +137,7 @@ public class FishController : MonoBehaviour {
         listaPeixes[1].hookType = new int[1];
         listaPeixes[1].hookType[0] = 2;
         listaPeixes[1].ambient = 0;
+        listaPeixes[0].inventoryWeight = 3;
 
         listaPeixes[2].name = "Level 3";
         listaPeixes[2].force = 60;
@@ -145,6 +147,7 @@ public class FishController : MonoBehaviour {
         listaPeixes[2].hookType[0] = 0;
         listaPeixes[2].hookType[1] = 2;
         listaPeixes[2].ambient = 1;
+        listaPeixes[0].inventoryWeight = 5;
 
         listaPeixes[3].name = "Level 4";
         listaPeixes[3].force = 80;
@@ -153,6 +156,7 @@ public class FishController : MonoBehaviour {
         listaPeixes[3].hookType = new int[1];
         listaPeixes[3].hookType[0] = 2;
         listaPeixes[3].ambient = 1;
+        listaPeixes[0].inventoryWeight = 7;
 
         listaPeixes[4].name = "Level 5";
         listaPeixes[4].force = 100;
@@ -161,5 +165,6 @@ public class FishController : MonoBehaviour {
         listaPeixes[4].hookType = new int[1];
         listaPeixes[4].hookType[0] = 1;
         listaPeixes[4].ambient = 2;
+        listaPeixes[0].inventoryWeight = 10;
     }
 }

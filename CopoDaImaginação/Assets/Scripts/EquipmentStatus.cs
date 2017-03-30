@@ -25,6 +25,7 @@ public struct BoatStatus
     public float dragToMaxSpeed;
     public float rotationSpeed;
     public float maxSpeed;
+    public int maxCapacity;
 
     public BoatStatus RefreshBoatStatus(BoatType b)
     {
@@ -35,11 +36,13 @@ public struct BoatStatus
                 bs.rotationSpeed = 120;
                 bs.dragToMaxSpeed = 3.5f;
                 bs.maxSpeed = 7;
+                bs.maxCapacity = 10;
                 break;
             case BoatType.Fast:
                 bs.rotationSpeed = 90;
                 bs.dragToMaxSpeed = 1.5f;
                 bs.maxSpeed = 10;
+                bs.maxCapacity = 20;
                 break;
         }
 
@@ -86,6 +89,7 @@ public struct FishStatus
     //float size;
     //float weight;
 
+    public int inventoryWeight;
     public float force;
     public float chanceAppear;
     public bool isDay;
