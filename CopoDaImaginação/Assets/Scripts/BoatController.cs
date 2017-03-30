@@ -13,9 +13,14 @@ public class BoatController : MonoBehaviour
 
     public BoatState boatState = BoatState.Moving;
     public float FishingBonusChance;
+
+    //Essas variáveis vão sumir
     public bool isDay;
     public int ambient;
     public string fishName;
+    //
+
+    public FishController fishController;
     public float distanceToFlee;
     public float fleeSpeed;
     public float forceDecrement;
@@ -312,16 +317,19 @@ public class BoatController : MonoBehaviour
             if (boatState == BoatState.Hooked)
             {
                 actualBoatCapacity += fishingSpot.GetComponent<FishingSpot>().listaPeixes[selectedFish].inventoryWeight;
-
+                
                 if (actualBoatCapacity > this.gameObject.GetComponent<Boat>().sBoat.maxCapacity)
                 {
                     Debug.Log("Lotou");
                     //APRESENTAR A LISTA DE PEIXES, ESCOLHER E DELETAR O PEIXE
-                   
+                    //se devolver o lixo, tem que aumentar de novo a chance do lixo aparecer
                 }
                 else
                 {
                     capturedFishList.Add(fishingSpot.GetComponent<FishingSpot>().listaPeixes[selectedFish]);
+                    if (fishingSpot.GetComponent<FishingSpot>().listaPeixes[selectedFish].name == "Lixo")
+                        fishController.CleanTrash(fishingSpot.GetComponent<FishingSpot>().listaPeixes[selectedFish]);
+
                     foreach (FishStatus f in capturedFishList)
                     {
                         Debug.Log(f.name);
@@ -377,24 +385,26 @@ public class BoatController : MonoBehaviour
 
         for (int i = 0; i < fs.listaPeixes.Length; i++)
         {
-            for (int j = 0; j < fs.listaPeixes[i].hookType.Length; j++)
+            if (fs.listaPeixes[i].name != "Lixo")
             {
-                if (fs.listaPeixes[i].hookType[j] == (int)this.gameObject.GetComponent<Boat>().baitType)
+                for (int j = 0; j < fs.listaPeixes[i].hookType.Length; j++)
                 {
+                    if (fs.listaPeixes[i].hookType[j] == (int)this.gameObject.GetComponent<Boat>().baitType)
+                    {
+                        fs.listaPeixes[i].chanceAppear += FishingBonusChance;
+                        break;
+                    }
+                    else if (j + 1 == fs.listaPeixes[i].hookType.Length) //Se não for a isca
+                    {
+                        fs.listaPeixes[i].chanceAppear -= FishingBonusChance;
+                    }
+                }
+                if (fs.listaPeixes[i].ambient == ambient)
                     fs.listaPeixes[i].chanceAppear += FishingBonusChance;
-                    break;
-                }
-                else if (j + 1 == fs.listaPeixes[i].hookType.Length) //Se não for a isca
-                {
-                    fs.listaPeixes[i].chanceAppear -= FishingBonusChance;
-                }
+                if (fs.listaPeixes[i].isDay == isDay)
+                    fs.listaPeixes[i].chanceAppear += FishingBonusChance;
+                else fs.listaPeixes[i].chanceAppear -= FishingBonusChance;
             }
-
-            if (fs.listaPeixes[i].ambient == ambient)
-                fs.listaPeixes[i].chanceAppear += FishingBonusChance;
-            if (fs.listaPeixes[i].isDay == isDay)
-                fs.listaPeixes[i].chanceAppear += FishingBonusChance;
-            else fs.listaPeixes[i].chanceAppear -= FishingBonusChance;
 
             chance += fs.listaPeixes[i].chanceAppear;
         }

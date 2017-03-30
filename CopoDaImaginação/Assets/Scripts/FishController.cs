@@ -9,6 +9,7 @@ public class FishController : MonoBehaviour {
     GameObject[] fishSpotList = new GameObject[maxFishSpots];
     int spotControl = 0;
     bool fullSpots = false;
+    public float trashChanceAppear = 5;
 
     #endregion
     
@@ -21,7 +22,7 @@ public class FishController : MonoBehaviour {
     public float forceRange;
     public float chanceRange;
 
-    FishStatus[] listaPeixes = new FishStatus[5];
+    FishStatus[] listaPeixes = new FishStatus[6];
 
     #endregion
 
@@ -60,14 +61,15 @@ public class FishController : MonoBehaviour {
             FillFishSpotList();
         Temporizador();
         boatMaxCameraArea.center = Camera.main.transform.position;
+    }
 
-        int K = Random.Range(0, 10);
-        if (Input.GetKeyDown(KeyCode.A))
-        {
-            Destroy(fishSpotList[K]);
-            fishSpotList[K] = null;
-            spotControl--;
-        }
+    public void CleanTrash(FishStatus fs)
+    {
+        trashChanceAppear = fs.CleanTrash();
+    }
+    public void AddTrash(FishStatus fs)
+    {
+        trashChanceAppear = fs.AddTrash();
     }
 
     void Temporizador()
@@ -137,7 +139,7 @@ public class FishController : MonoBehaviour {
         listaPeixes[1].hookType = new int[1];
         listaPeixes[1].hookType[0] = 2;
         listaPeixes[1].ambient = 0;
-        listaPeixes[0].inventoryWeight = 3;
+        listaPeixes[1].inventoryWeight = 3;
 
         listaPeixes[2].name = "Level 3";
         listaPeixes[2].force = 60;
@@ -147,7 +149,7 @@ public class FishController : MonoBehaviour {
         listaPeixes[2].hookType[0] = 0;
         listaPeixes[2].hookType[1] = 2;
         listaPeixes[2].ambient = 1;
-        listaPeixes[0].inventoryWeight = 5;
+        listaPeixes[2].inventoryWeight = 5;
 
         listaPeixes[3].name = "Level 4";
         listaPeixes[3].force = 80;
@@ -156,7 +158,7 @@ public class FishController : MonoBehaviour {
         listaPeixes[3].hookType = new int[1];
         listaPeixes[3].hookType[0] = 2;
         listaPeixes[3].ambient = 1;
-        listaPeixes[0].inventoryWeight = 7;
+        listaPeixes[3].inventoryWeight = 7;
 
         listaPeixes[4].name = "Level 5";
         listaPeixes[4].force = 100;
@@ -165,6 +167,11 @@ public class FishController : MonoBehaviour {
         listaPeixes[4].hookType = new int[1];
         listaPeixes[4].hookType[0] = 1;
         listaPeixes[4].ambient = 2;
-        listaPeixes[0].inventoryWeight = 10;
+        listaPeixes[4].inventoryWeight = 10;
+
+        listaPeixes[5].name = "Lixo";
+        listaPeixes[5].force = Random.Range(0,50);
+        listaPeixes[5].chanceAppear = trashChanceAppear;
+        listaPeixes[5].inventoryWeight = 1;
     }
 }

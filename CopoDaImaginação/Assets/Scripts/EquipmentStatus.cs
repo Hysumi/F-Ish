@@ -95,5 +95,14 @@ public struct FishStatus
     public bool isDay;
     public int[] hookType;
     public int ambient;
+
+    public float CleanTrash()
+    {
+        return (chanceAppear - Mathf.Log(force, 50)); //CALIBRAR ISSAQUE DEPOIS
+    }
+    public float AddTrash()
+    {
+        return (chanceAppear + Mathf.Log(force, 50)); //CALIBRAR ISSAQUE DEPOIS
+    }
 }
 
