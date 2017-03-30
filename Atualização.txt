@@ -30,8 +30,7 @@ PS: Pesca Quase Funciona, tem um bug que eu vi uma vez e naõ entendi;
 3/28:
 
 - Falta debugar e calibrar
-- Falta adicionar o lixo
-- Falta colocar influência do barco nos peixes
+- Falta colocar influência do barco nos peixes (pensar numa forma decente de fazer...)
 
 Como Jogar:
 1)Andar com o barco.
