@@ -12,20 +12,21 @@ public class BoatController : MonoBehaviour
     }
 
     public BoatState boatState = BoatState.Moving;
+    public float arrowSpacing;
     public float FishingBonusChance;
-
+    
     //Essas variáveis vão sumir
     public bool isDay;
     public int ambient;
     public string fishName;
     //
 
-    public FishController fishController;
+    public FishController fishController; //TINHA QUE TRANSFORMAR ISSO NUM EVENTO
     public float distanceToFlee;
     public float fleeSpeed;
     public float forceDecrement;
     public float holdRange;
-    public List<FishStatus> capturedFishList = new List<FishStatus>();
+    public List<FishStatus> capturedFishList = new List<FishStatus>(); //ARMAZENAR DEPOIS
 
     Vector2 dragOrigin;
 
@@ -44,17 +45,17 @@ public class BoatController : MonoBehaviour
     //Variáveis da linha
     float throwForce;
 
-    //Anzol
+    //Anzol 
     GameObject anzol;
     RaycastHit2D anzolRaycastHit;
-    RaycastHit2D[] anzolFishingTrigger;
+    RaycastHit2D[] anzolFishingTrigger; //PODIA SER UM EVENTO DO PEIXE
     Vector2 lineDirection;
     Bounds anzolBounds;
 
     //Gambiarra: CLICAR NO BARCO
     Bounds boatArea;
 
-    //Bounds da Camera
+    //Bounds da Camera para determinar a área de visão
     Bounds mainCameraBounds;
 
     //Variávies do peixe pego
@@ -62,12 +63,19 @@ public class BoatController : MonoBehaviour
     bool selected = false;
     Vector3 fishOrigin;
     int selectedFish;
-    float originalFishResistence, actualFishResistence;
+    float originalFishResistence, actualFishResistence; 
     float originalReelResistence, actualReelResistence;
     int actualBoatCapacity = 0;
+       
+    public GameObject barras;
+    GameObject _fishBar, _rodBar;
+    Vector3 _arrowSpacing;
 
     public void BoatMovement(GameObject boat, GameObject player, BoatStatus b)
     {
+        _fishBar = barras.transform.GetChild(0).gameObject;
+        _rodBar = barras.transform.GetChild(1).gameObject;
+
         boatArea = boat.GetComponent<BoxCollider2D>().bounds;
         Vector2 dragVector = AnalogStick();
         
@@ -91,15 +99,19 @@ public class BoatController : MonoBehaviour
     public float ThrowLine(GameObject line, GameObject target, RodStatus r, Vector3 playerPos)
     {
         Vector3 dragVector = AnalogStick();
-
+        barras.transform.position = new Vector3(barras.transform.position.x, barras.transform.position.y, -20);
         if (isDragging)
         {
             isHoldLine = true;
             float angle = Mathf.Atan2(dragVector.y, dragVector.x) * Mathf.Rad2Deg;
-            angle += 180;
+            angle -= 90;
+
             throwForce = DragForce(dragVector, r.maxDistance, r.maxDistance);
+
+            _arrowSpacing = dragVector.normalized * arrowSpacing;
+            
             line.transform.localEulerAngles = new Vector3(0, 0, angle);
-            line.transform.position = playerPos + new Vector3(0, 0, 0);
+            line.transform.position = playerPos + _arrowSpacing;
 
             return (throwForce);
         }
@@ -156,6 +168,7 @@ public class BoatController : MonoBehaviour
                 {
                     fishingSpot = anzolFishingTrigger[i].transform.gameObject;
                     boatState = BoatState.Hooked;
+                    barras.transform.position = new Vector3(barras.transform.position.x, barras.transform.position.y, 0);
                     break;
                 }
             }
@@ -170,6 +183,7 @@ public class BoatController : MonoBehaviour
                     if (fs.GetComponent<FishingSpot>().isTriggered && fs.name != fishingSpot.name)
                         fs.GetComponent<FishingSpot>().ResetFish();
             }
+
         }
         else 
             PullLine();
@@ -177,7 +191,6 @@ public class BoatController : MonoBehaviour
 
     public void FishingBattle(RodStatus rs)
     {
-
         Vector3 stick = AnalogStick();
         //Debug.Log("HoldRange: " + stick.y + " FishResistence: " + actualFishResistence + " ReelResistence: " + actualReelResistence);
 
@@ -191,8 +204,8 @@ public class BoatController : MonoBehaviour
             originalReelResistence = rs.reelResistence;
         }
 
-        Vector2 fishDirection = (this.gameObject.transform.position - fishingSpot.transform.position).normalized;
-        fishDirection *= -1;
+        Vector2 fishDirection = (this.gameObject.transform.position + fishingSpot.transform.position).normalized;
+        //fishDirection *= -1;
 
         anzol.transform.position = fishingSpot.GetComponentInChildren<Transform>().position + new Vector3(fishDirection.x, fishDirection.y) / 4;
         lineDirection = (anzol.transform.position - this.gameObject.transform.position).normalized;
@@ -203,18 +216,17 @@ public class BoatController : MonoBehaviour
         if (!isDragging || actualReelResistence <= 0)
         {
             actualFishResistence += Time.deltaTime * forceDecrement;
-
             if (actualFishResistence >= originalFishResistence)
             {
                 fishingSpot.transform.position += Time.deltaTime * new Vector3(fishDirection.x, fishDirection.y) * fleeSpeed;
                 actualFishResistence = originalFishResistence;
             }
             else
+            {
                 fishingSpot.transform.position += Time.deltaTime * new Vector3(fishDirection.x, fishDirection.y) * fleeSpeed / 2;
-
+            }
             if (Vector3.Distance(fishingSpot.transform.position, fishOrigin) > distanceToFlee || actualReelResistence <= 0)
                 ResetFishBattle();
-
         }
         else
         {
@@ -236,7 +248,9 @@ public class BoatController : MonoBehaviour
                 if (actualFishResistence <= 0)
                     actualFishResistence = 0;
             }
-           
+            _fishBar.transform.GetChild(0).transform.localScale = new Vector3(_fishBar.transform.GetChild(0).transform.localScale.x, actualFishResistence / originalFishResistence);
+            _rodBar.transform.GetChild(0).transform.localScale = new Vector3(_rodBar.transform.GetChild(0).transform.localScale.x, actualReelResistence / originalReelResistence);
+
         }
     }
 
