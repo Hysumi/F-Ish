@@ -7,7 +7,9 @@ public class Boat : MonoBehaviour {
     public BoatController bcontroller;
 
     public BoatType boatType;
+    public BoatCapacityType boatCapacityType;
     public RodType rodType;
+    public ReelType reelType;
     public HookAndBaitType baitType;
     
     //GAMBIARRA 1
@@ -18,6 +20,8 @@ public class Boat : MonoBehaviour {
     [HideInInspector]
     public BoatStatus sBoat = new BoatStatus();
     RodStatus sRod = new RodStatus();
+
+    public int points;
 
     void Start ()
     {
@@ -49,8 +53,8 @@ public class Boat : MonoBehaviour {
     //Debug, quando tiver UI pra mudar o equip, é só dar refresh na estrutura
     void RefreshStatus()
     {
-        sBoat = sBoat.RefreshBoatStatus(boatType);
-        sRod = sRod.RefreshRodStatus(rodType);
+        sBoat = sBoat.RefreshBoatStatus(boatType, boatCapacityType);
+        sRod = sRod.RefreshRodStatus(rodType, reelType);
     }
 
     void GradientForce(Material m)
