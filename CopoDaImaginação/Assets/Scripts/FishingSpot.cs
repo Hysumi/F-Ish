@@ -4,6 +4,10 @@ using UnityEngine;
 
 public class FishingSpot : MonoBehaviour {
 
+    //Animar o anzol
+    Animator anim;
+    bool hit = false;
+
     //Mudar aqui depois o tamanho do rio
     float riverRange = 4.5f;
     bool outOfRange = false;
@@ -32,7 +36,6 @@ public class FishingSpot : MonoBehaviour {
 
     #endregion
 
-    // Use this for initialization
     void Start ()
     {
         bcontroller = new BoatController();
@@ -42,7 +45,6 @@ public class FishingSpot : MonoBehaviour {
         fishBounds.size = this.gameObject.transform.localScale;
 	}
 	
-	// Update is called once per frame
 	void Update ()
     {
         fishBounds.center = fishHead.transform.position;
@@ -55,6 +57,9 @@ public class FishingSpot : MonoBehaviour {
         {
             if (!isHooked && (anzolBounds.Intersects(fishBounds) || isKnockBack))
             {
+                if(anzolBounds.Intersects(fishBounds))
+                    anim.SetTrigger("Cutucou");
+
                 isKnockBack = true;
                 if (hookHits == 0)
                     isHooked = true;
@@ -91,6 +96,7 @@ public class FishingSpot : MonoBehaviour {
     {
         isTriggered = true;
         anzol = a;
+        anim = anzol.GetComponent<Animator>();
         anzolBounds = anzolB;
     }
 

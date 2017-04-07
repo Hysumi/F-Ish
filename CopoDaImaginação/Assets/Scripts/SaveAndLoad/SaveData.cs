@@ -17,7 +17,7 @@ public class SaveData{
 
         foreach (ActorData data in actorContainer.actors)
         {
-            GameController.CreateActor(data, GameController.playerPath, data.position, Quaternion.identity);
+            GameController.CreateActor(data);
         }
         OnLoaded();
 

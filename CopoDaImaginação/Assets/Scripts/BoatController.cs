@@ -14,7 +14,8 @@ public class BoatController : MonoBehaviour
     public BoatState boatState = BoatState.Moving;
     public float arrowSpacing;
     public float FishingBonusChance;
-    
+    public Animator anim;
+
     //Essas variáveis vão sumir
     public bool isDay;
     public int ambient;
@@ -22,6 +23,10 @@ public class BoatController : MonoBehaviour
     //
 
     public FishController fishController; //TINHA QUE TRANSFORMAR ISSO NUM EVENTO
+
+    public float reactionTime;
+    float _reactionTimmer = 0;
+
     public float distanceToFlee;
     public float fleeSpeed;
     public float forceDecrement;
@@ -33,6 +38,8 @@ public class BoatController : MonoBehaviour
     //Bools de controle 
     bool isDragging;
     bool isHoldLine = false;
+    bool canInstantiateHook = false;
+    bool isHooked = false;
     [HideInInspector]
     public bool isStopped;
 
@@ -50,6 +57,9 @@ public class BoatController : MonoBehaviour
     RaycastHit2D anzolRaycastHit;
     RaycastHit2D[] anzolFishingTrigger; //PODIA SER UM EVENTO DO PEIXE
     Vector2 lineDirection;
+    Vector3 hookEndPosition;
+    public float throwSpeed;
+    float hookSize;
     Bounds anzolBounds;
 
     //Gambiarra: CLICAR NO BARCO
@@ -98,9 +108,9 @@ public class BoatController : MonoBehaviour
     
     public float ThrowLine(GameObject line, GameObject target, RodStatus r, Vector3 playerPos)
     {
-        Vector3 dragVector = AnalogStick();
+        Vector3 dragVector = AnalogStick();        
         barras.transform.position = new Vector3(barras.transform.position.x, barras.transform.position.y, -20);
-        if (isDragging)
+        if (isDragging && !canInstantiateHook)
         {
             isHoldLine = true;
             float angle = Mathf.Atan2(dragVector.y, dragVector.x) * Mathf.Rad2Deg;
@@ -115,7 +125,7 @@ public class BoatController : MonoBehaviour
 
             return (throwForce);
         }
-        else if (!isHoldLine && !anzol)
+        else if (!isHoldLine && !canInstantiateHook)
         {
             mainCameraBounds.center = Camera.main.transform.position + new Vector3(0, 0, 10);
             mainCameraBounds.size = new Vector2(Camera.main.aspect * 2f * Camera.main.orthographicSize, 2f * Camera.main.orthographicSize);
@@ -130,9 +140,14 @@ public class BoatController : MonoBehaviour
             if (mainCameraBounds.Intersects(anzolBounds))
             {
                 if (!anzolRaycastHit)
-                { 
+                {
                     //Não jogou no barco
-                    boatState = BoatState.Fishing;
+                    canInstantiateHook = true;
+                    hookEndPosition = anzol.transform.position;
+                    anzol.transform.position = playerPos;
+                    anzol.transform.localScale = new Vector3(0.1f, 0.1f, 1);
+                    hookSize = anzol.transform.localEulerAngles.x;
+                    //boatState = BoatState.Fishing;
                 }
                 else
                 {
@@ -148,8 +163,36 @@ public class BoatController : MonoBehaviour
                 anzol = null;
             }
             line.transform.position = playerPos + new Vector3(0, 0, -999);
-
         }
+        if (canInstantiateHook && anzol)
+        {
+            if (Vector3.Distance(anzol.transform.position, hookEndPosition) < 0.2f)
+            {
+                anim = anzol.GetComponent<Animator>();
+                anzol.transform.position = hookEndPosition;
+                anzol.transform.localScale = new Vector3(0.2f, 0.2f, 1);
+                anim.SetTrigger("Cutucou");
+                boatState = BoatState.Fishing;
+                canInstantiateHook = false;
+            }
+            else
+            {
+                if (Vector3.Distance(anzol.transform.position, hookEndPosition) > Vector3.Distance(playerPos, hookEndPosition) / 2)
+                {
+                    hookSize += Time.deltaTime;
+                    anzol.transform.localScale = new Vector3(hookSize, hookSize, 1);
+                }
+                else
+                {
+                    hookSize -= Time.deltaTime;
+                    if (hookSize <= 0.2)
+                        hookSize = 0.2f;
+                    anzol.transform.localScale = new Vector3(hookSize, hookSize, 1);
+                }
+                anzol.transform.position += _arrowSpacing/arrowSpacing * throwSpeed * Time.deltaTime;
+            }
+        }
+
         return (0);
     }
 
@@ -157,43 +200,62 @@ public class BoatController : MonoBehaviour
     {
         anzolFishingTrigger = Physics2D.CircleCastAll(anzol.transform.position, 1.5f, Vector2.zero); //RAIO ESTÁTICO??
 
-        for (int i = 0; i < anzolFishingTrigger.Length; i++)
-        {
-            if (anzolFishingTrigger[i].transform.gameObject.tag == "Fish")
-            {
-                FishingSpot fs = anzolFishingTrigger[i].transform.gameObject.GetComponent<FishingSpot>();
-                fs.FishingTrigger(anzol, anzolBounds);
-
-                if (fs.isHooked)
-                {
-                    fishingSpot = anzolFishingTrigger[i].transform.gameObject;
-                    boatState = BoatState.Hooked;
-                    barras.transform.position = new Vector3(barras.transform.position.x, barras.transform.position.y, 0);
-                    break;
-                }
-            }
-        }
-
-        if(boatState == BoatState.Hooked)
+        if (!isHooked)
         {
             for (int i = 0; i < anzolFishingTrigger.Length; i++)
             {
-                GameObject fs = anzolFishingTrigger[i].transform.gameObject;
-                if(fs.tag != "Player")
-                    if (fs.GetComponent<FishingSpot>().isTriggered && fs.name != fishingSpot.name)
-                        fs.GetComponent<FishingSpot>().ResetFish();
+                if (anzolFishingTrigger[i].transform.gameObject.tag == "Fish")
+                {
+                    FishingSpot fs = anzolFishingTrigger[i].transform.gameObject.GetComponent<FishingSpot>();
+                    fs.FishingTrigger(anzol, anzolBounds);
+
+                    if (fs.isHooked)
+                    {
+                        fishingSpot = anzolFishingTrigger[i].transform.gameObject;
+                        //boatState = BoatState.Hooked;
+                        isHooked = true;
+                        anim.SetTrigger("Fisgou");
+                        break;
+                    }
+                }
+            }
+            PullLine();
+        }
+        else //(boatState == BoatState.Hooked)
+        {
+            if(!Input.GetMouseButtonDown(0))
+                _reactionTimmer += Time.deltaTime;
+            else if(_reactionTimmer <= reactionTime)
+            {
+                boatState = BoatState.Hooked;
+                _reactionTimmer = 0;
+                isHooked = false;
+                barras.transform.position = new Vector3(barras.transform.position.x, barras.transform.position.y, 0);
             }
 
+            if (_reactionTimmer > reactionTime)
+            {
+                _reactionTimmer = 0;
+                isHooked = false;
+                ResetFishBattle();
+            }
+
+            if(boatState == BoatState.Hooked)
+                for (int i = 0; i < anzolFishingTrigger.Length; i++)
+                {
+                    GameObject fs = anzolFishingTrigger[i].transform.gameObject;
+                    if(fs.tag != "Player")
+                        if (fs.GetComponent<FishingSpot>().isTriggered && fs.name != fishingSpot.name)
+                            fs.GetComponent<FishingSpot>().ResetFish();
+                }
         }
-        else 
-            PullLine();
     }
 
     public void FishingBattle(RodStatus rs)
     {
         Vector3 stick = AnalogStick();
         //Debug.Log("HoldRange: " + stick.y + " FishResistence: " + actualFishResistence + " ReelResistence: " + actualReelResistence);
-
+        
         if (!selected)
         {
             SelectFishInFishList(fishingSpot.GetComponent<FishingSpot>());
@@ -361,7 +423,7 @@ public class BoatController : MonoBehaviour
         }
     }
 
-    void ResetFishBattle() //Colocar no PullLine e no Caso quando ele foge
+    void ResetFishBattle() 
     {
         DestroyImmediate(fishingSpot);
         fishingSpot = null;

@@ -1,26 +1,40 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
 public class Actor : MonoBehaviour {
 
+    [HideInInspector]
     public ActorData data = new ActorData();
     public string pname = "actor";
     public int points;
+
+    public List<int> boList = new List<int>();
+    public List<int> baList = new List<int>();
+    public List<int> rList = new List<int>();
+    public List<FishStatus> fList = new List<FishStatus>();
+    public List<string> aList = new List<string>();
 
     public void StoreData()
     {
         data.userName = pname;
         data.userPoints = points;
-        data.position = transform.position;
+        data.boatsList = boList;
+        data.baitList = baList;
+        data.rodList = rList;
+        data.fishList = fList;
+        data.acessoryList = aList;
     }
 
     public void LoadData()
     {
         pname = data.userName;
         points = data.userPoints;
-        transform.position = data.position;
+        boList = data.boatsList;
+        baList = data.baitList;
+        rList = data.rodList;
+        fList = data.fishList;
+        aList = data.acessoryList;
     }
 
     public void ApplyData()
@@ -47,7 +61,6 @@ public class Actor : MonoBehaviour {
 public class ActorData
 {
     public string userName;
-    public Vector3 position; //DEBUG DO VIDEO
     public int userPoints;
 
     public List<int> boatsList = new List<int>();
