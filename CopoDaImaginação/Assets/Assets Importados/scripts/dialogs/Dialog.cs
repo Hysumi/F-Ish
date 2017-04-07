@@ -5,14 +5,14 @@ public class Dialog : MonoBehaviour {
 
     public GameObject dialogRoot;
 
-    protected bool _isOpened = false;
+    public bool _isOpened = false;
 
     public void Close() {
         if(!_isOpened)
             return;
         Animator animator = gameObject.GetComponent<Animator>();
         animator.enabled = true;
-        animator.CrossFade("dialog_hide", 0);
+        animator.CrossFade("dialog_hide",0);
         _isOpened = false;
     }
         
@@ -34,7 +34,7 @@ public class Dialog : MonoBehaviour {
             gameObject.SetActive(true);
         Animator animator = gameObject.GetComponent<Animator>();
         animator.enabled = true;
-        animator.CrossFade("dialog_open", 0);
+        animator.CrossFade("dialog_open",0);
         _isOpened = true;
     }
 

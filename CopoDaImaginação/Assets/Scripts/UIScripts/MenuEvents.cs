@@ -4,6 +4,21 @@ using UnityEngine;
 
 public class MenuEvents : MonoBehaviour
 {
+    public static MenuEvents events;
+
+    void start()
+    {
+        DontDestroyOnLoad(this);
+        if(events != this)
+        {
+            Destroy(this);
+        }
+        else
+        {
+            events = this;
+        }
+    }
+
     public delegate void ExitCall();
     public static event ExitCall ExitButtonEvent;
 
@@ -21,9 +36,8 @@ public class MenuEvents : MonoBehaviour
     {
         RankingButtonEvent();
     }
-    internal void Start()
+    internal void StartEvent()
     {
         StartButtonEvent();
     }
-
 }

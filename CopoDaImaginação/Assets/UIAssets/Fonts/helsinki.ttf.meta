@@ -1,0 +1,21 @@
+fileFormatVersion: 2
+guid: 0ac1fe1445c6d0d4b9f27092e962522a
+timeCreated: 1491526550
+licenseType: Free
+TrueTypeFontImporter:
+  serializedVersion: 4
+  fontSize: 16
+  forceTextureCase: -2
+  characterSpacing: 0
+  characterPadding: 1
+  includeFontData: 1
+  fontName: Helsinki
+  fontNames:
+  - Helsinki
+  fallbackFontReferences: []
+  customCharacters: 
+  fontRenderingMode: 0
+  ascentCalculationMode: 1
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

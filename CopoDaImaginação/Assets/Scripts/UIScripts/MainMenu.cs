@@ -1,24 +1,30 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class MainMenu : MonoBehaviour
 {
-    MenuEvents menuEvents;
+    public GameObject RankingMenu;
     void Start()
     {
-        menuEvents = GetComponentInParent<MenuEvents>();
+        GetComponent<Dialog>().Open();
     }
-    public void ExitButton()
+    public void CallRanking()
     {
-        menuEvents.Exit();
+        StartCoroutine(Closing());
     }
-    public void RankingButton()
+    IEnumerator Closing()
     {
-        menuEvents.Ranking();
+        GetComponent<Dialog>().Close();
+        yield return new WaitForSeconds(0.25f);
+        OpenRanking();
+        StopAllCoroutines();
+
     }
-    public void StartButton()
+    void OpenRanking()
     {
-        menuEvents.Exit();
+        RankingMenu.SetActive(true);
+        RankingMenu.GetComponent<Dialog>().Open();
     }
 }
