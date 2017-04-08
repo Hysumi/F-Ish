@@ -3,7 +3,6 @@
 [RequireComponent(typeof(BoatController))]
 public class Boat : MonoBehaviour {
 
-    public float chute;
     //Linha
     private LineRenderer lRend;
     private Vector3[] points = new Vector3[5];
@@ -40,14 +39,15 @@ public class Boat : MonoBehaviour {
 
     void Update ()
     {
-        Debug.Log(sRod.reelPullForce + " " + sRod.reelResistence);
         switch (bcontroller.boatState)
         {
             case BoatController.BoatState.Moving:
+                player.transform.GetChild(0).gameObject.SetActive(false);
                 bcontroller.BoatMovement(this.gameObject, player, sBoat);
                 LineForce.transform.position = new Vector3(0, 0, -100);
                 break;
             case BoatController.BoatState.Stop:
+                player.transform.GetChild(0).gameObject.SetActive(true);
                 if (bcontroller.anzol)
                     Line();
                 else
@@ -75,7 +75,7 @@ public class Boat : MonoBehaviour {
 
     void GradientForce(Material m)
     {
-        float x = bcontroller.ThrowLine(LineForce, LineTarget, sRod, player.transform.position);
+        float x = bcontroller.ThrowLine(LineForce, LineTarget, sRod, player, this.gameObject.transform.localEulerAngles.z);
         m.color = new Color(x, 1-x, 0);
     }
 
