@@ -23,7 +23,7 @@ public class Dialog : MonoBehaviour {
             gameObject.SetActive(false);
         Animator animator = gameObject.GetComponent<Animator>();
         animator.enabled = false;
-        animator.Stop();
+        animator.StopPlayback();
     }
 	virtual public void Open() {
         if(_isOpened)
@@ -40,7 +40,7 @@ public class Dialog : MonoBehaviour {
 
     virtual public void OpenComplete() {
         Animator animator = gameObject.GetComponent<Animator>();
-        animator.Stop();
+        animator.StopPlayback();
         animator.enabled = false;
     }
 }

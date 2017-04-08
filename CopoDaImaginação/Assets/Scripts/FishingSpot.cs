@@ -57,9 +57,8 @@ public class FishingSpot : MonoBehaviour {
         {
             if (!isHooked && (anzolBounds.Intersects(fishBounds) || isKnockBack))
             {
-                if(anzolBounds.Intersects(fishBounds))
+                if (anzolBounds.Intersects(fishBounds))
                     anim.SetTrigger("Cutucou");
-
                 isKnockBack = true;
                 if (hookHits == 0)
                     isHooked = true;
@@ -68,7 +67,7 @@ public class FishingSpot : MonoBehaviour {
             else if (!isHooked)
             {
                 Vector3 newDirection = (anzol.transform.position - this.gameObject.transform.position).normalized;
-                fishVector = newDirection;
+                fishVector = newDirection*-1;
 
                 if (Vector3.Distance(this.gameObject.transform.position, anzol.transform.position) < 0.5f) //Se estiver pronto pra dar o bote
                     fishSpeed = 30;
@@ -78,16 +77,21 @@ public class FishingSpot : MonoBehaviour {
             }
         }
 
+        if(isHooked)
+            this.gameObject.GetComponent<Animator>().SetTrigger("Back");
+
         Temporizador();
     }
     public void KnockBack()
     {
+        this.gameObject.GetComponent<Animator>().SetTrigger("KnockBack");
         fishSpeed = 2;
         Vector3 newPos = -fishDirection * Time.deltaTime * Random.Range(0f, 1f) * fishSpeed;
-        this.gameObject.transform.position -= newPos;
+        this.gameObject.transform.position += newPos;
         if (Vector3.Distance(this.gameObject.transform.position, anzol.transform.position) > 0.7f)
         {
             isKnockBack = false;
+            this.gameObject.GetComponent<Animator>().SetTrigger("Back");
             hookHits--;
         }
     }
@@ -124,7 +128,7 @@ public class FishingSpot : MonoBehaviour {
 
         Vector3 newPos = fishDirection * Time.deltaTime * Random.Range(0f, 1f) * fishSpeed;
 
-        this.gameObject.transform.position -= newPos;
+        this.gameObject.transform.position += newPos;
     }
 
     void Oscioso()

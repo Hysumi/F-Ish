@@ -14,6 +14,7 @@ public class BoatController : MonoBehaviour
     public BoatState boatState = BoatState.Moving;
     public float arrowSpacing;
     public float FishingBonusChance;
+    [HideInInspector]
     public Animator anim;
 
     //Essas variáveis vão sumir
@@ -22,6 +23,7 @@ public class BoatController : MonoBehaviour
     public string fishName;
     //
 
+    [HideInInspector]
     public FishController fishController; //TINHA QUE TRANSFORMAR ISSO NUM EVENTO
 
     public float reactionTime;
@@ -53,10 +55,12 @@ public class BoatController : MonoBehaviour
     float throwForce;
 
     //Anzol 
-    GameObject anzol;
+    [HideInInspector]
+    public GameObject anzol;
     RaycastHit2D anzolRaycastHit;
     RaycastHit2D[] anzolFishingTrigger; //PODIA SER UM EVENTO DO PEIXE
-    Vector2 lineDirection;
+    [HideInInspector]
+    public Vector2 lineDirection;
     Vector3 hookEndPosition;
     public float throwSpeed;
     float hookSize;
@@ -135,7 +139,7 @@ public class BoatController : MonoBehaviour
             anzol = Instantiate(target, dragVector.normalized * r.maxDistance * throwForce + line.transform.position, new Quaternion());
 
             anzolRaycastHit = Physics2D.CircleCast(anzol.transform.position, 0.1f, Vector2.zero);
-            anzolBounds = new Bounds(anzol.transform.position, new Vector3(0.2f, 0.2f));
+            anzolBounds = new Bounds(anzol.transform.position, new Vector3(0.5f, 0.5f));
 
             if (mainCameraBounds.Intersects(anzolBounds))
             {
@@ -180,6 +184,8 @@ public class BoatController : MonoBehaviour
                 if (Vector3.Distance(anzol.transform.position, hookEndPosition) > Vector3.Distance(playerPos, hookEndPosition) / 2)
                 {
                     hookSize += Time.deltaTime;
+                    if (hookSize >= 0.275f)
+                        hookSize = 0.275f;
                     anzol.transform.localScale = new Vector3(hookSize, hookSize, 1);
                 }
                 else
@@ -223,16 +229,17 @@ public class BoatController : MonoBehaviour
         }
         else //(boatState == BoatState.Hooked)
         {
+            AnalogStick();
             if(!Input.GetMouseButtonDown(0))
                 _reactionTimmer += Time.deltaTime;
             else if(_reactionTimmer <= reactionTime)
             {
+                fishingSpot.GetComponent<Animator>().speed = 2;
                 boatState = BoatState.Hooked;
                 _reactionTimmer = 0;
                 isHooked = false;
                 barras.transform.position = new Vector3(barras.transform.position.x, barras.transform.position.y, 0);
             }
-
             if (_reactionTimmer > reactionTime)
             {
                 _reactionTimmer = 0;
@@ -272,7 +279,7 @@ public class BoatController : MonoBehaviour
         anzol.transform.position = fishingSpot.GetComponentInChildren<Transform>().position + new Vector3(fishDirection.x, fishDirection.y) / 4;
         lineDirection = (anzol.transform.position - this.gameObject.transform.position).normalized;
         float fishAngle = Mathf.Atan2(fishDirection.y, fishDirection.x) * Mathf.Rad2Deg;
-        fishAngle += 90;
+        fishAngle -= 90;
         SoftRotation(fishAngle, 200, fishingSpot);
 
         if (!isDragging || actualReelResistence <= 0)
