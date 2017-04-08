@@ -40,6 +40,7 @@ public class Boat : MonoBehaviour {
 
     void Update ()
     {
+        Debug.Log(sRod.reelPullForce + " " + sRod.reelResistence);
         switch (bcontroller.boatState)
         {
             case BoatController.BoatState.Moving:
@@ -54,7 +55,7 @@ public class Boat : MonoBehaviour {
                 GradientForce(LineForce.GetComponent<Renderer>().material);            
                 break;
             case BoatController.BoatState.Fishing:
-                bcontroller.Fishing();
+                bcontroller.Fishing(sRod);
                 Line();
                 break;
             case BoatController.BoatState.Hooked:

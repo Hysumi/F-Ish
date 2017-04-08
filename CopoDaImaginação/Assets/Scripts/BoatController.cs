@@ -202,7 +202,7 @@ public class BoatController : MonoBehaviour
         return (0);
     }
 
-    public void Fishing()
+    public void Fishing(RodStatus rs)
     {
         anzolFishingTrigger = Physics2D.CircleCastAll(anzol.transform.position, 1.5f, Vector2.zero); //RAIO ESTÁTICO??
 
@@ -225,7 +225,7 @@ public class BoatController : MonoBehaviour
                     }
                 }
             }
-            PullLine();
+            PullLine(rs.reelPullForce);
         }
         else //(boatState == BoatState.Hooked)
         {
@@ -301,12 +301,12 @@ public class BoatController : MonoBehaviour
         {
             if (rs.force > actualFishResistence && stick.y > holdRange)
             {
-                PullLine();
+                PullLine(rs.reelPullForce);
                 actualFishResistence += Time.deltaTime * forceDecrement;
             }
             else if (rs.force <= actualFishResistence && stick.y > holdRange)
             {
-                actualFishResistence -= Time.deltaTime * forceDecrement * 1.5f; //tá tretando com o peixe
+                //actualFishResistence -= Time.deltaTime * forceDecrement * 1.5f; //tá tretando com o peixe
                 actualReelResistence -= Time.deltaTime * forceDecrement;
                 if (actualFishResistence <= 0)
                     actualFishResistence = 0;
@@ -385,14 +385,14 @@ public class BoatController : MonoBehaviour
         }
     }
 
-    void PullLine()
+    void PullLine(float reelPullForce)
     {
         float yDragForce = AnalogStick().y;
         if (yDragForce < 0)
             yDragForce = 0;
-        anzol.transform.position -= new Vector3(lineDirection.x, lineDirection.y, 0)*yDragForce/10 *Time.deltaTime;
+        anzol.transform.position -= new Vector3(lineDirection.x, lineDirection.y, 0)* reelPullForce * yDragForce / 10 *Time.deltaTime;
         if(fishingSpot)
-            fishingSpot.transform.position -= new Vector3(lineDirection.x, lineDirection.y, 0) * yDragForce * Time.deltaTime / 10; //DIVIDE NO CHUTE
+            fishingSpot.transform.position -= new Vector3(lineDirection.x, lineDirection.y, 0) * reelPullForce * yDragForce * Time.deltaTime / 10; //DIVIDE NO CHUTE
         anzolBounds.center = anzol.transform.position;
 
         if (boatArea.Intersects(anzolBounds)) //Pegou um peixe

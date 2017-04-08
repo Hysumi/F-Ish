@@ -84,6 +84,7 @@ public struct RodStatus
     public float maxDistance;
     public float force;
     public float reelResistence;
+    public float reelPullForce;
 
     public RodStatus RefreshRodStatus(RodType r, ReelType re)
     {
@@ -98,12 +99,15 @@ public struct RodStatus
                 {
                     case ReelType.Level1:
                         rs.reelResistence = 20;
+                        rs.reelPullForce = 1.5f;
                         break;
                     case ReelType.Level2:
                         rs.reelResistence = 40;
+                        rs.reelPullForce = 2f;
                         break;
                     case ReelType.Level3:
                         rs.reelResistence = 60;
+                        rs.reelPullForce = 3f;
                         break;
                 }
                 break;
@@ -114,12 +118,15 @@ public struct RodStatus
                 {
                     case ReelType.Level1:
                         rs.reelResistence = 20;
+                        rs.reelPullForce = 1.5f;
                         break;
                     case ReelType.Level2:
                         rs.reelResistence = 40;
+                        rs.reelPullForce = 2f;
                         break;
                     case ReelType.Level3:
                         rs.reelResistence = 60;
+                        rs.reelPullForce = 3f;
                         break;
                 }
                 break;
@@ -130,12 +137,15 @@ public struct RodStatus
                 {
                     case ReelType.Level1:
                         rs.reelResistence = 20;
+                        rs.reelPullForce = 1.5f;
                         break;
                     case ReelType.Level2:
                         rs.reelResistence = 40;
+                        rs.reelPullForce = 2f;
                         break;
                     case ReelType.Level3:
                         rs.reelResistence = 60;
+                        rs.reelPullForce = 3f;
                         break;
                 }
                 break;
