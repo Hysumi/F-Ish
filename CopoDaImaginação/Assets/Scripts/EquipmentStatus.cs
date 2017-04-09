@@ -94,7 +94,7 @@ public struct RodStatus
         {
             case RodType.Level1:
                 rs.maxDistance = 1.5f;
-                rs.force = 5;
+                rs.force = 10;
                 switch (re)
                 {
                     case ReelType.Level1:

@@ -490,21 +490,21 @@ public class BoatController : MonoBehaviour
                 {
                     if (fs.listaPeixes[i].hookType[j] == (int)this.gameObject.GetComponent<Boat>().baitType)
                     {
-                        fs.listaPeixes[i].chanceAppear += FishingBonusChance;
+                        fs.listaPeixes[i].chanceAppear *= FishingBonusChance;
                         break;
                     }
                     else if (j + 1 == fs.listaPeixes[i].hookType.Length) //Se não for a isca
                     {
-                        fs.listaPeixes[i].chanceAppear -= FishingBonusChance;
+                        fs.listaPeixes[i].chanceAppear /= FishingBonusChance;
                     }
                 }
                 if (fs.listaPeixes[i].ambient == ambient)
-                    fs.listaPeixes[i].chanceAppear += FishingBonusChance;
+                    fs.listaPeixes[i].chanceAppear *= FishingBonusChance;
                 if (fs.listaPeixes[i].isDay == isDay)
-                    fs.listaPeixes[i].chanceAppear += FishingBonusChance;
-                else fs.listaPeixes[i].chanceAppear -= FishingBonusChance;
+                    fs.listaPeixes[i].chanceAppear *= FishingBonusChance;
+                else fs.listaPeixes[i].chanceAppear /= FishingBonusChance;
             }
-
+            Debug.Log(fs.listaPeixes[i].chanceAppear);
             chance += fs.listaPeixes[i].chanceAppear;
         }
         return (chance);

@@ -2,7 +2,6 @@
 using UnityEngine;
 using Unity3dAzure.AppServices;
 using System;
-using UnityEngine.UI;
 using System.Net;
 using System.Linq;
 
@@ -10,11 +9,12 @@ public class RiverNumberFishAzure : MonoBehaviour
 {
 
     [SerializeField]
-    private string _appUrl = "PASTE_YOUR_APP_URL";
+    private string _appUrl = "http://docerio.azurewebsites.net"; //"PASTE_YOUR_APP_URL";
     private MobileServiceTable<RiverNumberFish> _table;
     private MobileServiceClient _client;
     private RiverNumberFish _fish;
     public List<RiverNumberFish> _allFishInDB = new List<RiverNumberFish>();
+    public bool isReadCompleted = false;
 
     private uint _skip = 0;
     private const uint _noPageResults = 50;
@@ -60,6 +60,8 @@ public class RiverNumberFishAzure : MonoBehaviour
 
     public void GetAllFishes()
     {
+        isReadCompleted = false;
+
         _allFishInDB = new List<RiverNumberFish>();
         CustomQuery query = new CustomQuery("", "nFish desc", _noPageResults, _skip, "id,fishName, nFish");
         StartCoroutine(_table.Query<RiverNumberFish>(query, OnReadNestedResultsCompleted));
@@ -73,6 +75,7 @@ public class RiverNumberFishAzure : MonoBehaviour
             RiverNumberFish[] items = response.Data.results;
             _totalCount = response.Data.count;
             Debug.Log("Read items count: " + items.Length + "/" + response.Data.count);
+            isReadCompleted = true;
             _isPaginated = true; // nested query will support pagination
             if (_skip != 0)
             {

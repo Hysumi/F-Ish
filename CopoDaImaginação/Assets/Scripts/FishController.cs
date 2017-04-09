@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using System.Collections.Generic;
 
 public class FishController : MonoBehaviour {
 
@@ -9,10 +10,12 @@ public class FishController : MonoBehaviour {
     GameObject[] fishSpotList = new GameObject[maxFishSpots];
     int spotControl = 0;
     bool fullSpots = false;
-    public float trashChanceAppear = 5;
+    public float trashChanceAppear = 0.9f;
 
     #endregion
-    
+
+    RiverNumberFishAzure getFromAzure;
+
     //Rect boatArea;
     public Vector2 boatSummonRange;
     Bounds boatMaxCameraArea;
@@ -22,7 +25,7 @@ public class FishController : MonoBehaviour {
     public float forceRange;
     public float chanceRange;
 
-    FishStatus[] listaPeixes = new FishStatus[6];
+    FishStatus[] listaPeixes = new FishStatus[7];
 
     #endregion
 
@@ -35,7 +38,10 @@ public class FishController : MonoBehaviour {
 
     void Start ()
     {
-        FillFishList();
+        getFromAzure = GetComponent<RiverNumberFishAzure>();
+        getFromAzure.GetAllFishes();
+
+        //FillFishList();
         boatMaxCameraArea.center = Camera.main.transform.position;
         boatMaxCameraArea.size = new Vector2(boatSummonRange.x, boatSummonRange.y);
 
@@ -56,6 +62,13 @@ public class FishController : MonoBehaviour {
     // Update is called once per frame
     void Update ()
     {
+        if (getFromAzure.isReadCompleted)
+        {
+            //FAZER LOAD AQUI
+            FillFishList();
+            getFromAzure.isReadCompleted = false;
+        }
+
         //ESTATICO 3
         if (actualTime >= SummonTime)
             FillFishSpotList();
@@ -121,57 +134,80 @@ public class FishController : MonoBehaviour {
 
     void FillFishList()
     {
-        //ESTATICO 1
-        listaPeixes[0].name = "Level 1";
-        listaPeixes[0].force = 10;
-        listaPeixes[0].chanceAppear = 0.7f;
-        listaPeixes[0].isDay = true;
-        listaPeixes[0].hookType = new int[2];
-        listaPeixes[0].hookType[0] = 0;
-        listaPeixes[0].hookType[1] = 1;
-        listaPeixes[0].ambient = 0;
-        listaPeixes[0].inventoryWeight = 2;
-
-        listaPeixes[1].name = "Level 2";
-        listaPeixes[1].force = 20;
-        listaPeixes[1].chanceAppear = 0.4f;
-        listaPeixes[1].isDay = false;
-        listaPeixes[1].hookType = new int[1];
-        listaPeixes[1].hookType[0] = 2;
-        listaPeixes[1].ambient = 0;
-        listaPeixes[1].inventoryWeight = 3;
-
-        listaPeixes[2].name = "Level 3";
-        listaPeixes[2].force = 60;
-        listaPeixes[2].chanceAppear = 0.25f;
-        listaPeixes[2].isDay = true;
-        listaPeixes[2].hookType = new int[2];
-        listaPeixes[2].hookType[0] = 0;
-        listaPeixes[2].hookType[1] = 2;
-        listaPeixes[2].ambient = 1;
-        listaPeixes[2].inventoryWeight = 5;
-
-        listaPeixes[3].name = "Level 4";
-        listaPeixes[3].force = 80;
-        listaPeixes[3].chanceAppear = 0.1f;
-        listaPeixes[3].isDay = true;
-        listaPeixes[3].hookType = new int[1];
-        listaPeixes[3].hookType[0] = 2;
-        listaPeixes[3].ambient = 1;
-        listaPeixes[3].inventoryWeight = 7;
-
-        listaPeixes[4].name = "Level 5";
-        listaPeixes[4].force = 100;
-        listaPeixes[4].chanceAppear = 0.05f;
-        listaPeixes[4].isDay = false;
-        listaPeixes[4].hookType = new int[1];
-        listaPeixes[4].hookType[0] = 1;
-        listaPeixes[4].ambient = 2;
-        listaPeixes[4].inventoryWeight = 10;
-
-        listaPeixes[5].name = "Lixo";
-        listaPeixes[5].force = Random.Range(0,50);
-        listaPeixes[5].chanceAppear = trashChanceAppear;
-        listaPeixes[5].inventoryWeight = 1;
+        foreach (RiverNumberFish fish in getFromAzure._allFishInDB)
+        {
+            switch (fish.fishName)
+            {
+                case "Lixo":
+                    listaPeixes[0].name = "Lixo";
+                    listaPeixes[0].force = Random.Range(0, 10);
+                    listaPeixes[0].chanceAppear = fish.nFish * trashChanceAppear;
+                    listaPeixes[0].inventoryWeight = 1;
+                    break;
+                case "Lambari":
+                    listaPeixes[1].name = "Lambari";
+                    listaPeixes[1].force = 10;
+                    listaPeixes[1].chanceAppear = 0.7f * fish.nFish;
+                    listaPeixes[1].isDay = true;
+                    listaPeixes[1].hookType = new int[2];
+                    listaPeixes[1].hookType[0] = 0;
+                    listaPeixes[1].hookType[1] = 1;
+                    listaPeixes[1].ambient = 0;
+                    listaPeixes[1].inventoryWeight = 1;
+                    break;
+                case "Mandi":
+                    listaPeixes[2].name = "Mandi";
+                    listaPeixes[2].force = 20;
+                    listaPeixes[2].chanceAppear = 0.6f * fish.nFish;
+                    listaPeixes[2].isDay = false;
+                    listaPeixes[2].hookType = new int[1];
+                    listaPeixes[2].hookType[0] = 2;
+                    listaPeixes[2].ambient = 0;
+                    listaPeixes[2].inventoryWeight = 3;
+                    break;
+                case "Pacu":
+                    listaPeixes[3].name = "Pacu";
+                    listaPeixes[3].force = 60;
+                    listaPeixes[3].chanceAppear = 0.5f*fish.nFish;
+                    listaPeixes[3].isDay = true;
+                    listaPeixes[3].hookType = new int[2];
+                    listaPeixes[3].hookType[0] = 0;
+                    listaPeixes[3].hookType[1] = 2;
+                    listaPeixes[3].ambient = 1;
+                    listaPeixes[3].inventoryWeight = 5;
+                    break;
+                case "Apaiari":
+                    listaPeixes[4].name = "Apaiari";
+                    listaPeixes[4].force = 80;
+                    listaPeixes[4].chanceAppear = 0.45f * fish.nFish;
+                    listaPeixes[4].isDay = true;
+                    listaPeixes[4].hookType = new int[1];
+                    listaPeixes[4].hookType[0] = 2;
+                    listaPeixes[4].ambient = 1;
+                    listaPeixes[4].inventoryWeight = 7;
+                    break;
+                case "Piraputanga":
+                    listaPeixes[5].name = "Piraputanga";
+                    listaPeixes[5].force = 100;
+                    listaPeixes[5].chanceAppear = 0.4f * fish.nFish;
+                    listaPeixes[5].isDay = false;
+                    listaPeixes[5].hookType = new int[1];
+                    listaPeixes[5].hookType[0] = 1;
+                    listaPeixes[5].ambient = 2;
+                    listaPeixes[5].inventoryWeight = 7;
+                    break;
+                case "Cachara":
+                    listaPeixes[6].name = "Piraputanga";
+                    listaPeixes[6].force = 150;
+                    listaPeixes[6].chanceAppear = 0.4f * fish.nFish;
+                    listaPeixes[6].isDay = true;
+                    listaPeixes[6].hookType = new int[1];
+                    listaPeixes[6].hookType[0] = 1;
+                    listaPeixes[6].ambient = 2;
+                    listaPeixes[6].inventoryWeight = 10;
+                    break;
+            }
+          
+        }
     }
 }
