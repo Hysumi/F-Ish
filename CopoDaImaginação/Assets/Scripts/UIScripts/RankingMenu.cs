@@ -15,7 +15,7 @@ public class RankingMenu : MonoBehaviour
         yield return new WaitForSeconds(0.25f);
         OpenMenu();
         StopAllCoroutines();
-
+        yield break;
     }
     void OpenMenu()
     {
