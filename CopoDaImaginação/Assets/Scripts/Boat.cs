@@ -5,7 +5,7 @@ public class Boat : MonoBehaviour {
 
     //Linha
     private LineRenderer lRend;
-    private Vector3[] points = new Vector3[5];
+    private Vector3[] pointsOfLine = new Vector3[5];
 
     private readonly int point_Begin = 0;
     private readonly int point_End = 1;
@@ -83,17 +83,17 @@ public class Boat : MonoBehaviour {
     {
         if (bcontroller.anzol)
         {
-            points[point_Begin] = this.gameObject.GetComponent<Boat>().player.transform.position;
-            points[point_End] = bcontroller.anzol.transform.position;
-            lRend.SetPositions(points);
+            pointsOfLine[point_Begin] = this.gameObject.GetComponent<Boat>().player.transform.position;
+            pointsOfLine[point_End] = bcontroller.anzol.transform.position;
+            lRend.SetPositions(pointsOfLine);
         }
     }
 
     void ResetLine()
     {
-        points[point_Begin] = this.gameObject.GetComponent<Boat>().player.transform.position;
-        points[point_End] = this.gameObject.GetComponent<Boat>().player.transform.position;
-        lRend.SetPositions(points);
+        pointsOfLine[point_Begin] = this.gameObject.GetComponent<Boat>().player.transform.position;
+        pointsOfLine[point_End] = this.gameObject.GetComponent<Boat>().player.transform.position;
+        lRend.SetPositions(pointsOfLine);
     }
 
 }
