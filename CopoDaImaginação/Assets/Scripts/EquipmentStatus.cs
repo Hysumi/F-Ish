@@ -2,8 +2,9 @@
 
 public enum BoatType
 {
-    Fast = 0,
-    Balanced = 1
+    level1 = 0,
+    level2 = 1,
+    level3 = 2
 }
 
 public enum BoatCapacityType
@@ -45,10 +46,10 @@ public struct BoatStatus
         BoatStatus bs = new BoatStatus();
         switch (b)
         {
-            case BoatType.Balanced:
+            case BoatType.level1:
                 bs.rotationSpeed = 120;
                 bs.dragToMaxSpeed = 3.5f;
-                bs.maxSpeed = 7;
+                bs.maxSpeed = 10;
                 switch (c)
                 {
                     case BoatCapacityType.level1:
@@ -59,10 +60,24 @@ public struct BoatStatus
                         break;
                 }
                 break;
-            case BoatType.Fast:
+            case BoatType.level2:
                 bs.rotationSpeed = 90;
                 bs.dragToMaxSpeed = 1.5f;
-                bs.maxSpeed = 10;
+                bs.maxSpeed = 15;
+                switch (c)
+                {
+                    case BoatCapacityType.level1:
+                        bs.maxCapacity = 10;
+                        break;
+                    case BoatCapacityType.level2:
+                        bs.maxCapacity = 20;
+                        break;
+                }
+                break;
+            case BoatType.level3:
+                bs.rotationSpeed = 120;
+                bs.dragToMaxSpeed = 1f;
+                bs.maxSpeed = 20;
                 switch (c)
                 {
                     case BoatCapacityType.level1:
@@ -84,6 +99,7 @@ public struct RodStatus
     public float maxDistance;
     public float force;
     public float reelResistence;
+    public float reelPullForce;
 
     public RodStatus RefreshRodStatus(RodType r, ReelType re)
     {
@@ -93,17 +109,20 @@ public struct RodStatus
         {
             case RodType.Level1:
                 rs.maxDistance = 1.5f;
-                rs.force = 5;
+                rs.force = 10;
                 switch (re)
                 {
                     case ReelType.Level1:
                         rs.reelResistence = 20;
+                        rs.reelPullForce = 1.5f;
                         break;
                     case ReelType.Level2:
                         rs.reelResistence = 40;
+                        rs.reelPullForce = 2f;
                         break;
                     case ReelType.Level3:
                         rs.reelResistence = 60;
+                        rs.reelPullForce = 3f;
                         break;
                 }
                 break;
@@ -114,12 +133,15 @@ public struct RodStatus
                 {
                     case ReelType.Level1:
                         rs.reelResistence = 20;
+                        rs.reelPullForce = 1.5f;
                         break;
                     case ReelType.Level2:
                         rs.reelResistence = 40;
+                        rs.reelPullForce = 2f;
                         break;
                     case ReelType.Level3:
                         rs.reelResistence = 60;
+                        rs.reelPullForce = 3f;
                         break;
                 }
                 break;
@@ -130,12 +152,15 @@ public struct RodStatus
                 {
                     case ReelType.Level1:
                         rs.reelResistence = 20;
+                        rs.reelPullForce = 1.5f;
                         break;
                     case ReelType.Level2:
                         rs.reelResistence = 40;
+                        rs.reelPullForce = 2f;
                         break;
                     case ReelType.Level3:
                         rs.reelResistence = 60;
+                        rs.reelPullForce = 3f;
                         break;
                 }
                 break;

@@ -3,13 +3,15 @@
 [RequireComponent(typeof(BoatController))]
 public class Boat : MonoBehaviour {
 
-    public float chute;
     //Linha
     private LineRenderer lRend;
-    private Vector3[] points = new Vector3[5];
+    private Vector3[] pointsOfLine = new Vector3[5];
 
     private readonly int point_Begin = 0;
     private readonly int point_End = 1;
+
+    //Tipo barco
+    public Sprite b1, b2, b3;
 
     [HideInInspector]
     public BoatController bcontroller;
@@ -43,10 +45,12 @@ public class Boat : MonoBehaviour {
         switch (bcontroller.boatState)
         {
             case BoatController.BoatState.Moving:
+                player.transform.GetChild(0).gameObject.SetActive(false);
                 bcontroller.BoatMovement(this.gameObject, player, sBoat);
                 LineForce.transform.position = new Vector3(0, 0, -100);
                 break;
             case BoatController.BoatState.Stop:
+                player.transform.GetChild(0).gameObject.SetActive(true);
                 if (bcontroller.anzol)
                     Line();
                 else
@@ -54,7 +58,7 @@ public class Boat : MonoBehaviour {
                 GradientForce(LineForce.GetComponent<Renderer>().material);            
                 break;
             case BoatController.BoatState.Fishing:
-                bcontroller.Fishing();
+                bcontroller.Fishing(sRod);
                 Line();
                 break;
             case BoatController.BoatState.Hooked:
@@ -69,12 +73,24 @@ public class Boat : MonoBehaviour {
     void RefreshStatus()
     {
         sBoat = sBoat.RefreshBoatStatus(boatType, boatCapacityType);
+        switch (boatType)
+        {
+            case BoatType.level1:
+                this.gameObject.GetComponent<SpriteRenderer>().sprite = b1;
+                break;
+            case BoatType.level2:
+                this.gameObject.GetComponent<SpriteRenderer>().sprite = b2;
+                break;
+            case BoatType.level3:
+                this.gameObject.GetComponent<SpriteRenderer>().sprite = b3;
+                break;
+        }
         sRod = sRod.RefreshRodStatus(rodType, reelType);
     }
 
     void GradientForce(Material m)
     {
-        float x = bcontroller.ThrowLine(LineForce, LineTarget, sRod, player.transform.position);
+        float x = bcontroller.ThrowLine(LineForce, LineTarget, sRod, player, this.gameObject.transform.localEulerAngles.z);
         m.color = new Color(x, 1-x, 0);
     }
 
@@ -82,17 +98,17 @@ public class Boat : MonoBehaviour {
     {
         if (bcontroller.anzol)
         {
-            points[point_Begin] = this.gameObject.GetComponent<Boat>().player.transform.position;
-            points[point_End] = bcontroller.anzol.transform.position;
-            lRend.SetPositions(points);
+            pointsOfLine[point_Begin] = this.gameObject.GetComponent<Boat>().player.transform.position;
+            pointsOfLine[point_End] = bcontroller.anzol.transform.position;
+            lRend.SetPositions(pointsOfLine);
         }
     }
 
     void ResetLine()
     {
-        points[point_Begin] = this.gameObject.GetComponent<Boat>().player.transform.position;
-        points[point_End] = this.gameObject.GetComponent<Boat>().player.transform.position;
-        lRend.SetPositions(points);
+        pointsOfLine[point_Begin] = this.gameObject.GetComponent<Boat>().player.transform.position;
+        pointsOfLine[point_End] = this.gameObject.GetComponent<Boat>().player.transform.position;
+        lRend.SetPositions(pointsOfLine);
     }
 
 }
