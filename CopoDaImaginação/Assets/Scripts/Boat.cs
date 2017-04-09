@@ -10,6 +10,9 @@ public class Boat : MonoBehaviour {
     private readonly int point_Begin = 0;
     private readonly int point_End = 1;
 
+    //Tipo barco
+    public Sprite b1, b2, b3;
+
     [HideInInspector]
     public BoatController bcontroller;
 
@@ -70,6 +73,18 @@ public class Boat : MonoBehaviour {
     void RefreshStatus()
     {
         sBoat = sBoat.RefreshBoatStatus(boatType, boatCapacityType);
+        switch (boatType)
+        {
+            case BoatType.level1:
+                this.gameObject.GetComponent<SpriteRenderer>().sprite = b1;
+                break;
+            case BoatType.level2:
+                this.gameObject.GetComponent<SpriteRenderer>().sprite = b2;
+                break;
+            case BoatType.level3:
+                this.gameObject.GetComponent<SpriteRenderer>().sprite = b3;
+                break;
+        }
         sRod = sRod.RefreshRodStatus(rodType, reelType);
     }
 

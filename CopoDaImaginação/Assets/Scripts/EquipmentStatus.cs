@@ -2,8 +2,9 @@
 
 public enum BoatType
 {
-    Fast = 0,
-    Balanced = 1
+    level1 = 0,
+    level2 = 1,
+    level3 = 2
 }
 
 public enum BoatCapacityType
@@ -45,10 +46,10 @@ public struct BoatStatus
         BoatStatus bs = new BoatStatus();
         switch (b)
         {
-            case BoatType.Balanced:
+            case BoatType.level1:
                 bs.rotationSpeed = 120;
                 bs.dragToMaxSpeed = 3.5f;
-                bs.maxSpeed = 7;
+                bs.maxSpeed = 10;
                 switch (c)
                 {
                     case BoatCapacityType.level1:
@@ -59,10 +60,24 @@ public struct BoatStatus
                         break;
                 }
                 break;
-            case BoatType.Fast:
+            case BoatType.level2:
                 bs.rotationSpeed = 90;
                 bs.dragToMaxSpeed = 1.5f;
-                bs.maxSpeed = 10;
+                bs.maxSpeed = 15;
+                switch (c)
+                {
+                    case BoatCapacityType.level1:
+                        bs.maxCapacity = 10;
+                        break;
+                    case BoatCapacityType.level2:
+                        bs.maxCapacity = 20;
+                        break;
+                }
+                break;
+            case BoatType.level3:
+                bs.rotationSpeed = 120;
+                bs.dragToMaxSpeed = 1f;
+                bs.maxSpeed = 20;
                 switch (c)
                 {
                     case BoatCapacityType.level1:
