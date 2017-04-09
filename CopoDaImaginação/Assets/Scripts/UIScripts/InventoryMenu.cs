@@ -5,6 +5,10 @@ using UnityEngine;
 public class InventoryMenu : MonoBehaviour
 {
     public GameObject HUD;
+    public GameObject PauseMenu;
+
+    public delegate void inventoryOpen();
+    public static event inventoryOpen changeInvetory;
 
     void Update()
     {
@@ -17,5 +21,11 @@ public class InventoryMenu : MonoBehaviour
     void OnDisable()
     {
         HUD.SetActive(true);
+        changeInvetory();
+    }
+
+    void OnEnable()
+    {
+        changeInvetory();
     }
 }

@@ -13,4 +13,5 @@ public class HUD : MonoBehaviour
         pauseEvent();
         gameObject.SetActive(false);
     }
+
 }

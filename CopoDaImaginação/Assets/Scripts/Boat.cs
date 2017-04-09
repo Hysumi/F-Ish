@@ -1,8 +1,10 @@
 ﻿using UnityEngine;
 
 [RequireComponent(typeof(BoatController))]
-public class Boat : MonoBehaviour {
-
+public class Boat : MonoBehaviour
+{
+    public bool isPaused = false;
+    public bool isInventory = false;
     //Linha
     private LineRenderer lRend;
     private Vector3[] pointsOfLine = new Vector3[5];
@@ -38,35 +40,41 @@ public class Boat : MonoBehaviour {
         bcontroller = GetComponent<BoatController>();
         bcontroller.boatState = 0;
         lRend = GetComponent<LineRenderer>();
+        HUD.pauseEvent += changePausedState;
+        PauseMenu.unPauseEvent += changePausedState;
+        InventoryMenu.changeInvetory += changeInventoryState;
     }
 
-    void Update ()
+    void Update()
     {
-        switch (bcontroller.boatState)
+        if (!isPaused&&!isInventory)
         {
-            case BoatController.BoatState.Moving:
-                player.transform.GetChild(0).gameObject.SetActive(false);
-                bcontroller.BoatMovement(this.gameObject, player, sBoat);
-                LineForce.transform.position = new Vector3(0, 0, -100);
-                break;
-            case BoatController.BoatState.Stop:
-                player.transform.GetChild(0).gameObject.SetActive(true);
-                if (bcontroller.anzol)
+            switch (bcontroller.boatState)
+            {
+                case BoatController.BoatState.Moving:
+                    player.transform.GetChild(0).gameObject.SetActive(false);
+                    bcontroller.BoatMovement(this.gameObject, player, sBoat);
+                    LineForce.transform.position = new Vector3(0, 0, -100);
+                    break;
+                case BoatController.BoatState.Stop:
+                    player.transform.GetChild(0).gameObject.SetActive(true);
+                    if (bcontroller.anzol)
+                        Line();
+                    else
+                        ResetLine();
+                    GradientForce(LineForce.GetComponent<Renderer>().material);
+                    break;
+                case BoatController.BoatState.Fishing:
+                    bcontroller.Fishing(sRod);
                     Line();
-                else
-                    ResetLine();
-                GradientForce(LineForce.GetComponent<Renderer>().material);            
-                break;
-            case BoatController.BoatState.Fishing:
-                bcontroller.Fishing(sRod);
-                Line();
-                break;
-            case BoatController.BoatState.Hooked:
-                bcontroller.FishingBattle(sRod);
-                Line();
-                break;
+                    break;
+                case BoatController.BoatState.Hooked:
+                    bcontroller.FishingBattle(sRod);
+                    Line();
+                    break;
+            }
         }
-        RefreshStatus(); //Teria que atualizar quando há troca de itens
+            RefreshStatus(); //Teria que atualizar quando há troca de itens
     }
 
     //Debug, quando tiver UI pra mudar o equip, é só dar refresh na estrutura
@@ -111,4 +119,27 @@ public class Boat : MonoBehaviour {
         lRend.SetPositions(pointsOfLine);
     }
 
+
+    void changePausedState()
+    {
+        if (isPaused == true)
+        {
+            isPaused = false;
+        }
+        else
+        {
+            isPaused = true;
+        }
+    }
+    void changeInventoryState()
+    {
+        if (isInventory == true)
+        {
+            isInventory = false;
+        }
+        else
+        {
+            isInventory = true;
+        }
+    }
 }

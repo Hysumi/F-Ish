@@ -3,6 +3,7 @@ using UnityEngine;
 
 public class BoatController : MonoBehaviour
 {
+    //Inventario
     public enum BoatState
     {
         Moving = 0,
@@ -10,6 +11,9 @@ public class BoatController : MonoBehaviour
         Fishing = 2,
         Hooked = 3
     }
+
+    public delegate void Pescou(Item novoItem);
+    public static event Pescou pescouPeixe;
 
     public BoatState boatState = BoatState.Moving;
     public float arrowSpacing;
@@ -425,9 +429,19 @@ public class BoatController : MonoBehaviour
                     else
                     {
                         capturedFishList.Add(fishingSpot.GetComponent<FishingSpot>().listaPeixes[selectedFish]);
+                        try {
+                            pescouPeixe(fishingSpot.GetComponent<FishingSpot>().listaPeixes[selectedFish].fishItem);
+                        }
+                        catch
+                        {
+                            print("pegou lixo");
+                        }
                         if (fishingSpot.GetComponent<FishingSpot>().listaPeixes[selectedFish].name == "Lixo")
+                        {
+                            Debug.Log((fishingSpot.GetComponent<FishingSpot>().listaPeixes[selectedFish].trashItem).GetType());
                             fishController.CleanTrash(fishingSpot.GetComponent<FishingSpot>().listaPeixes[selectedFish]);
-
+                            pescouPeixe(fishingSpot.GetComponent<FishingSpot>().listaPeixes[selectedFish].trashItem);
+                        }
                         foreach (FishStatus f in capturedFishList)
                         {
                             Debug.Log(f.name);

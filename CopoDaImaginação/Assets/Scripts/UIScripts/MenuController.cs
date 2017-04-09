@@ -6,6 +6,7 @@ using UnityEngine.SceneManagement;
 public class MenuController : MonoBehaviour
 {
     public static MenuController instance;
+    public Inventory inventario;
     public PauseMenu pauseMenu;
     void Start ()
     {
@@ -20,6 +21,7 @@ public class MenuController : MonoBehaviour
         }
         SceneManager.sceneLoaded += ChangeScene;
         HUD.pauseEvent += Pause;
+        BoatController.pescouPeixe += inventario.AddItem;
 
 	}
 
@@ -36,6 +38,7 @@ public class MenuController : MonoBehaviour
     }
     public void ChangeScene(Scene scene,LoadSceneMode mode)
     {
+        SceneManager.MergeScenes(SceneManager.GetSceneAt(0), scene);
         SceneManager.SetActiveScene(scene);
     }
     public void EndGame()

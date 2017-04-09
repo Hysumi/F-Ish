@@ -176,6 +176,9 @@ public struct FishStatus
     float size;
     float weight;
 
+    public Peixe fishItem;
+    public Lixo trashItem;
+
     public int inventoryWeight;
     public float force;
     public float chanceAppear;

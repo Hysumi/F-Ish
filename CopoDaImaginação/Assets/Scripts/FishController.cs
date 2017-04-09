@@ -143,6 +143,7 @@ public class FishController : MonoBehaviour {
                     listaPeixes[0].force = Random.Range(0, 10);
                     listaPeixes[0].chanceAppear = fish.nFish * trashChanceAppear;
                     listaPeixes[0].inventoryWeight = 1;
+                    listaPeixes[0].trashItem = Resources.Load("Itens/Lixos/Garrafa") as Lixo;
                     break;
                 case "Lambari":
                     listaPeixes[1].name = "Lambari";
@@ -154,6 +155,7 @@ public class FishController : MonoBehaviour {
                     listaPeixes[1].hookType[1] = 1;
                     listaPeixes[1].ambient = 0;
                     listaPeixes[1].inventoryWeight = 1;
+                    listaPeixes[1].fishItem = Resources.Load("Itens/Peixes/Lambari") as Peixe;
                     break;
                 case "Mandi":
                     listaPeixes[2].name = "Mandi";
@@ -164,6 +166,7 @@ public class FishController : MonoBehaviour {
                     listaPeixes[2].hookType[0] = 2;
                     listaPeixes[2].ambient = 0;
                     listaPeixes[2].inventoryWeight = 3;
+                    listaPeixes[2].fishItem = Resources.Load("Itens/Peixes/Mandi") as Peixe;
                     break;
                 case "Pacu":
                     listaPeixes[3].name = "Pacu";
@@ -175,6 +178,7 @@ public class FishController : MonoBehaviour {
                     listaPeixes[3].hookType[1] = 2;
                     listaPeixes[3].ambient = 1;
                     listaPeixes[3].inventoryWeight = 5;
+                    listaPeixes[3].fishItem = Resources.Load("Itens/Peixes/Pacu") as Peixe;
                     break;
                 case "Apaiari":
                     listaPeixes[4].name = "Apaiari";
@@ -185,6 +189,7 @@ public class FishController : MonoBehaviour {
                     listaPeixes[4].hookType[0] = 2;
                     listaPeixes[4].ambient = 1;
                     listaPeixes[4].inventoryWeight = 7;
+                    listaPeixes[4].fishItem = Resources.Load("Itens/Peixes/Apaiari") as Peixe;
                     break;
                 case "Piraputanga":
                     listaPeixes[5].name = "Piraputanga";
@@ -195,6 +200,7 @@ public class FishController : MonoBehaviour {
                     listaPeixes[5].hookType[0] = 1;
                     listaPeixes[5].ambient = 2;
                     listaPeixes[5].inventoryWeight = 7;
+                    listaPeixes[5].fishItem = Resources.Load("Itens/Peixes/Piraputanga") as Peixe;
                     break;
                 case "Cachara":
                     listaPeixes[6].name = "Piraputanga";
@@ -205,6 +211,7 @@ public class FishController : MonoBehaviour {
                     listaPeixes[6].hookType[0] = 1;
                     listaPeixes[6].ambient = 2;
                     listaPeixes[6].inventoryWeight = 10;
+                    listaPeixes[6].fishItem = Resources.Load("Itens/Peixes/Cachara") as Peixe;
                     break;
             }
           
