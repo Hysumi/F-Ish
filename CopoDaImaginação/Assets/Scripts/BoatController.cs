@@ -12,7 +12,16 @@ public class BoatController : MonoBehaviour
         Fishing = 2,
         Hooked = 3
     }
+    public Image currentFishResistence;
+    public Image currentReelResistence;
+    public GameObject bars;
 
+    public AudioClip anzolDropAudio;
+    public AudioClip reelPullAudio;
+    public AudioClip fisgouAudio;
+
+    bool isPulling = false;
+    bool fisgou = false;
     public delegate void Pescou(Item novoItem);
     public static event Pescou pescouPeixe;
 
@@ -86,12 +95,13 @@ public class BoatController : MonoBehaviour
     float originalReelResistence, actualReelResistence;
     int actualBoatCapacity = 0;
        
-    public GameObject barras;
+    //public GameObject barras;
     GameObject _fishBar, _rodBar;
     Vector3 _arrowSpacing;
 
     public void BoatMovement(GameObject boat, GameObject player, BoatStatus b)
     {
+        bars.SetActive(false);
         if (Mathf.Abs(player.transform.localEulerAngles.z) > 10)
         {
             SoftRotation(0, 300, player);
@@ -99,8 +109,8 @@ public class BoatController : MonoBehaviour
         else
         {
             player.transform.localEulerAngles = Vector3.zero;
-            _fishBar = barras.transform.GetChild(0).gameObject;
-            _rodBar = barras.transform.GetChild(1).gameObject;
+           // _fishBar = barras.transform.GetChild(0).gameObject;
+          //  _rodBar = barras.transform.GetChild(1).gameObject;
 
             boatArea = boat.GetComponent<BoxCollider2D>().bounds;
             Vector2 dragVector = AnalogStick();
@@ -115,18 +125,26 @@ public class BoatController : MonoBehaviour
 
                 SoftRotation(angle, b.rotationSpeed, boat);
 
+                
                 boatDirection = player.transform.position - boat.transform.position;
                 Vector3 newPos = boatDirection * Time.deltaTime * DragForce(dragVector, b.dragToMaxSpeed, b.maxSpeed) * b.maxSpeed;
-                boat.transform.position += newPos;
+                if (!boatArea.Intersects(new Bounds(new Vector3(5f, 15), new Vector3(1, 100)))
+                    && !boatArea.Intersects(new Bounds(new Vector3(5f, 15), new Vector3(1, 100)))
+                    && !boatArea.Intersects(new Bounds(new Vector3(0f, -4f), new Vector3(20, 1)))
+                    && !boatArea.Intersects(new Bounds(new Vector3(0f, 44f), new Vector3(20, 1)))
+                    ) //PAREDE INVISIVEL
+                    boat.transform.position += newPos;
                 dragOrigin += boatDirection * Time.deltaTime * DragForce(dragVector, b.dragToMaxSpeed, b.maxSpeed) * b.maxSpeed;
             }
         }
     }
-    
+
     public float ThrowLine(GameObject line, GameObject target, RodStatus r, GameObject player, float boatAngle)
     {
+        bars.SetActive(false);
+
         Vector3 dragVector = AnalogStick();        
-        barras.transform.position = new Vector3(barras.transform.position.x, barras.transform.position.y, -20);
+        //barras.transform.position = new Vector3(barras.transform.position.x, barras.transform.position.y, -20);
         if (isDragging && !canInstantiateHook)
         {
             isHoldLine = true;
@@ -159,14 +177,28 @@ public class BoatController : MonoBehaviour
                 if (!anzolRaycastHit)
                 {
                     //Não jogou no barco
-                    player.transform.GetChild(0).gameObject.GetComponent<Animator>().SetTrigger("Throw");
-                    
-                    canInstantiateHook = true;
-                    hookEndPosition = anzol.transform.position;
-                    anzol.transform.position = player.transform.position;
-                    anzol.transform.localScale = new Vector3(0.1f, 0.1f, 1);
-                    hookSize = anzol.transform.localEulerAngles.x;
-                    //boatState = BoatState.Fishing;
+
+                    if (!anzolBounds.Intersects(new Bounds(new Vector3(6f, 15), new Vector3(3, 100)))
+                    && !anzolBounds.Intersects(new Bounds(new Vector3(-6f, 15), new Vector3(3, 100)))
+                    && !anzolBounds.Intersects(new Bounds(new Vector3(0f, -5f), new Vector3(20, 3)))
+                    && !anzolBounds.Intersects(new Bounds(new Vector3(0f, 45f), new Vector3(20, 3)))
+                    )
+                    {
+                        player.transform.GetChild(0).gameObject.GetComponent<Animator>().SetTrigger("Throw");
+                        canInstantiateHook = true;
+                        hookEndPosition = anzol.transform.position;
+                        anzol.transform.position = player.transform.position;
+                        anzol.transform.localScale = new Vector3(0.1f, 0.1f, 1);
+                        hookSize = anzol.transform.localEulerAngles.x;
+                        //boatState = BoatState.Fishing;
+                        Debug.Log("Opa tá certo");
+                    }
+                    else
+                    {
+                        DestroyImmediate(anzol);
+                        anzol = null;
+                    }
+                   
                 }
                 else
                 {
@@ -192,6 +224,7 @@ public class BoatController : MonoBehaviour
                 anzol.transform.localScale = new Vector3(0.2f, 0.2f, 1);
                 anim.SetTrigger("Cutucou");
                 boatState = BoatState.Fishing;
+                AudioManager.instance.PlaySound(anzolDropAudio, anzol.transform.position);
                 canInstantiateHook = false;
             }
             else
@@ -244,16 +277,27 @@ public class BoatController : MonoBehaviour
         }
         else //(boatState == BoatState.Hooked)
         {
+            if (!fisgou)
+            {
+                AudioManager.instance.PlaySound(fisgouAudio, anzol.transform.position);
+                fisgou = true;
+            }
             AnalogStick();
             if(!Input.GetMouseButtonDown(0))
                 _reactionTimmer += Time.deltaTime;
             else if(_reactionTimmer <= reactionTime)
             {
                 fishingSpot.GetComponent<Animator>().speed = 2;
+                bars.SetActive(true);
+
+                if(this.gameObject.transform.position.x - fishingSpot.transform.position.x > 0)
+                    bars.GetComponent<RectTransform>().anchoredPosition = new Vector2(0, 0);
+                else
+                    bars.GetComponent<RectTransform>().anchoredPosition = new Vector2(-850, 0);
                 boatState = BoatState.Hooked;
                 _reactionTimmer = 0;
                 isHooked = false;
-                barras.transform.position = new Vector3(barras.transform.position.x, barras.transform.position.y, 0);
+                //barras.transform.position = new Vector3(barras.transform.position.x, barras.transform.position.y, 0);
             }
             if (_reactionTimmer > reactionTime)
             {
@@ -318,6 +362,8 @@ public class BoatController : MonoBehaviour
             {
                 PullLine(rs.reelPullForce);
                 actualFishResistence += Time.deltaTime * forceDecrement;
+                if (actualFishResistence > originalFishResistence)
+                    actualFishResistence = originalFishResistence;
             }
             else if (rs.force <= actualFishResistence && stick.y > holdRange)
             {
@@ -332,8 +378,10 @@ public class BoatController : MonoBehaviour
                 if (actualFishResistence <= 0)
                     actualFishResistence = 0;
             }
-            _fishBar.transform.GetChild(0).transform.localScale = new Vector3(_fishBar.transform.GetChild(0).transform.localScale.x, actualFishResistence / originalFishResistence);
-            _rodBar.transform.GetChild(0).transform.localScale = new Vector3(_rodBar.transform.GetChild(0).transform.localScale.x, actualReelResistence / originalReelResistence);
+            // _fishBar.transform.GetChild(0).transform.localScale = new Vector3(_fishBar.transform.GetChild(0).transform.localScale.x, actualFishResistence / originalFishResistence);
+            // _rodBar.transform.GetChild(0).transform.localScale = new Vector3(_rodBar.transform.GetChild(0).transform.localScale.x, actualReelResistence / originalReelResistence);
+            currentFishResistence.rectTransform.localScale = new Vector3(1, actualFishResistence / originalFishResistence, 1);
+            currentReelResistence.rectTransform.localScale = new Vector3(1, actualReelResistence / originalReelResistence, 1);
 
         }
     }
@@ -406,8 +454,16 @@ public class BoatController : MonoBehaviour
     {
 
         float yDragForce = AnalogStick().y;
-        if (yDragForce < 0)
+        if (yDragForce <= 0)
+        {
+            isPulling = false;
             yDragForce = 0;
+        }
+        else if (!isPulling)
+        {
+            AudioManager.instance.PlaySound(reelPullAudio, anzol.transform.position);
+            isPulling = true;
+        }
         if (anzol)
         {
             anzol.transform.position -= new Vector3(lineDirection.x, lineDirection.y, 0) * reelPullForce * yDragForce / 10 * Time.deltaTime;
@@ -463,6 +519,7 @@ public class BoatController : MonoBehaviour
 
     void ResetFishBattle() 
     {
+        fisgou = false;
         DestroyImmediate(fishingSpot);
         fishingSpot = null;
         DestroyImmediate(anzol);
@@ -519,7 +576,7 @@ public class BoatController : MonoBehaviour
                     fs.listaPeixes[i].chanceAppear *= FishingBonusChance;
                 else fs.listaPeixes[i].chanceAppear /= FishingBonusChance;
             }
-            Debug.Log(fs.listaPeixes[i].chanceAppear);
+            //Debug.Log(fs.listaPeixes[i].chanceAppear);
             chance += fs.listaPeixes[i].chanceAppear;
         }
         return (chance);

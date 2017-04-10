@@ -60,7 +60,7 @@ public class FishController : MonoBehaviour {
         {
             if (!fishSpotList[i])
             {
-                fishSpotList[i] = Instantiate(fishSpot, new Vector3(Random.Range(-4f, 4f), Random.Range(-15f, 15f), 0f), new Quaternion());
+                fishSpotList[i] = Instantiate(fishSpot, new Vector3(Random.Range(-4f, 4f), Random.Range(-1f, 40f), 0f), new Quaternion());
                 fishSpotList[i].GetComponent<FishingSpot>().listaPeixes = listaPeixes;
                 fishSpotList[i].gameObject.name = i + " SpotFish";
                 spotControl++;
@@ -128,7 +128,8 @@ public class FishController : MonoBehaviour {
             if (!fishSpotList[i])
             {
                 //GAMBIARRA 4
-                Vector3 point = new Vector3(Random.Range(-4f, 4f), Random.Range(-15f, 15f), 0);
+                Vector3 point = new Vector3(Random.Range(-4f, 4f), Random.Range(-1f, 40f), 0);
+                //Debug.Log(point);
                 Ray ray = new Ray(point, -Vector3.forward);
 
                 if (boatMaxCameraArea.IntersectRay(ray))
