@@ -39,9 +39,16 @@ public class Dialog : MonoBehaviour {
             {
                 //doStuff
             }
-        Animator animator = gameObject.GetComponent<Animator>();
-        animator.enabled = true;
-        animator.CrossFade("dialog_open",0);
+        try
+        {
+            Animator animator = gameObject.GetComponent<Animator>();
+            animator.enabled = true;
+            animator.CrossFade("dialog_open", 0);
+        }
+        catch
+        {
+            //DoStuff
+        }
         _isOpened = true;
     }
 
