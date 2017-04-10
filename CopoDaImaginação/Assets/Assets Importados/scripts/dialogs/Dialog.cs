@@ -28,10 +28,17 @@ public class Dialog : MonoBehaviour {
 	virtual public void Open() {
         if(_isOpened)
             return;
-        if(dialogRoot)
+        if (dialogRoot)
             dialogRoot.SetActive(true);
         else
-            gameObject.SetActive(true);
+            try
+            {
+                gameObject.SetActive(true);
+            }
+            catch
+            {
+                //doStuff
+            }
         Animator animator = gameObject.GetComponent<Animator>();
         animator.enabled = true;
         animator.CrossFade("dialog_open",0);

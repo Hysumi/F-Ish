@@ -8,6 +8,8 @@ public class MenuController : MonoBehaviour
     public static MenuController instance;
     public Inventory inventario;
     public PauseMenu pauseMenu;
+    public EndingPanel endingPanel;
+    public HUD HUD;
     void Start ()
     {
         if (!instance)
@@ -22,7 +24,9 @@ public class MenuController : MonoBehaviour
         SceneManager.sceneLoaded += ChangeScene;
         HUD.pauseEvent += Pause;
         BoatController.pescouPeixe += inventario.AddItem;
-
+        BoatController.pescouPeixe += endingPanel.AddScore;
+        FishController.TimeOut += endingPanel.gameObject.GetComponent<Dialog>().Open;
+        FishController.TimeOut += HUD.DisableSelf;
 	}
 
     public void StartLoading(string SceneID,bool Unload)
@@ -47,8 +51,15 @@ public class MenuController : MonoBehaviour
     }
     public void Pause()
     {
-        pauseMenu.gameObject.GetComponent<Dialog>().Open();
-    }
+        try
+        {
+            pauseMenu.gameObject.GetComponent<Dialog>().Open();
+        }
+        catch
+        {
+            //DoStuff;
+        }
+        }
     public void Quit()
     {
         Application.Quit();

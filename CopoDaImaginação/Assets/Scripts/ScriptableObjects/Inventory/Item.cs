@@ -5,4 +5,5 @@ public class Item : ScriptableObject
 {
     public Sprite sprite;
     public GameObject itemObject;
+    public float scoreValue;
 }

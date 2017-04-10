@@ -15,6 +15,8 @@ public class HighscoreAzure : MonoBehaviour
     private MobileServiceClient _client;
     private MobileServiceTable<Highscore> _table;
 
+    public bool isReadyComplete;
+
     private Highscore _score;
     //Leaderboard
     public List<Highscore> _scores = new List<Highscore>();
@@ -64,8 +66,8 @@ public class HighscoreAzure : MonoBehaviour
 
     private Highscore GetScore()
     {
-        string name = GameObject.Find("InputName").GetComponent<InputField>().text; //NOME DIGITADO PELO PLAYER
-        string score = GameObject.Find("Player").GetComponent<Boat>().playerPoints.ToString(); //PEGA OS PONTOS TOTAIS DO PLAYER 
+        string name = PlayerPrefs.GetString("Nome"); //NOME DIGITADO PELO PLAYER
+        string score = PlayerPrefs.GetFloat("Score").ToString();// playerscore
         string id = GameObject.Find("Id").GetComponent<Text>().text; //GERA UM ID
         Highscore highscore = new Highscore();
         highscore.username = name;
@@ -92,6 +94,7 @@ public class HighscoreAzure : MonoBehaviour
 
     private void GetPageHighscores()
     {
+        isReadyComplete = false;
         CustomQuery query = new CustomQuery("", "score desc", _noPageResults, _skip, "id,username,score");
         StartCoroutine(_table.Query<Highscore>(query, OnReadNestedResultsCompleted));
     }
@@ -105,6 +108,7 @@ public class HighscoreAzure : MonoBehaviour
             _totalCount = response.Data.count;
             Debug.Log("Read items count: " + items.Length + "/" + response.Data.count);
             _isPaginated = true; // nested query will support pagination
+            isReadyComplete = true;
             if (_skip != 0)
             {
                 _scores.AddRange(items.ToList());
@@ -113,6 +117,7 @@ public class HighscoreAzure : MonoBehaviour
             {
                 _scores = items.ToList(); // set for first page of results
             }
+
         }
         else
         {

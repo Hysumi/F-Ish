@@ -13,5 +13,9 @@ public class HUD : MonoBehaviour
         pauseEvent();
         gameObject.SetActive(false);
     }
+    public void DisableSelf()
+    {
+        gameObject.SetActive(false);
+    }
 
 }

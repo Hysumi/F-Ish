@@ -175,7 +175,7 @@ public struct FishStatus
     public string name;
     float size;
     float weight;
-
+    public float points;
     public Peixe fishItem;
     public Lixo trashItem;
 
