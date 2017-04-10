@@ -63,6 +63,11 @@ public class CameraFollow : MonoBehaviour {
 
     public Vector2 focusAreaSize;
 
+   // public float leftBorder = 7f;
+   // public float rightBorder = 7f;
+   // public float boatDirectionX;
+   // public float difBoatPlayer;
+
     FocusArea focusArea;
     BoxCollider2D col;
     Boat b;
@@ -136,10 +141,25 @@ public class CameraFollow : MonoBehaviour {
 
         focusPosition += Vector2.right * currentLookAheadX;
         focusPosition += Vector2.up * currentLookAheadY;
-        transform.position = (Vector3) focusPosition + Vector3.forward * -10;
+        transform.position = (Vector3)focusPosition + Vector3.forward * -10;
+
+        /*if (this.gameObject.transform.position.x < rightBorder / 2 && this.gameObject.transform.position.x > leftBorder)
+        {
+            difBoatPlayer = transform.position.x - b.transform.position.x;
+            transform.position = (Vector3)focusPosition + Vector3.forward * -10;
+            boatDirectionX = b.GetComponent<BoatController>().directionX;
+        }
+        else
+        {
+            Debug.Log(b.transform.position);
+            transform.position = new Vector3(this.transform.position.x, focusPosition.y + Vector3.forward.y * -10, this.gameObject.transform.
+                position.z);
+           
+            if (boatDirectionX != b.GetComponent<BoatController>().directionX && b.transform.position.x - difBoatPlayer< rightBorder/2)
+        }*/
     }
 
-   void OnDrawGizmos()
+    void OnDrawGizmos()
    {
         Gizmos.color = new Color(1, 0, 0, 0.5f);
         Gizmos.DrawCube(focusArea.centre, focusAreaSize);

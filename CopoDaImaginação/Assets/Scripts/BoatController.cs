@@ -115,14 +115,20 @@ public class BoatController : MonoBehaviour
 
                 SoftRotation(angle, b.rotationSpeed, boat);
 
+                
                 boatDirection = player.transform.position - boat.transform.position;
                 Vector3 newPos = boatDirection * Time.deltaTime * DragForce(dragVector, b.dragToMaxSpeed, b.maxSpeed) * b.maxSpeed;
-                boat.transform.position += newPos;
+                if (!boatArea.Intersects(new Bounds(new Vector3(5f, 15), new Vector3(1, 100)))
+                    && !boatArea.Intersects(new Bounds(new Vector3(5f, 15), new Vector3(1, 100)))
+                    && !boatArea.Intersects(new Bounds(new Vector3(0f, -4f), new Vector3(20, 1)))
+                    && !boatArea.Intersects(new Bounds(new Vector3(0f, 44f), new Vector3(20, 1)))
+                    ) //PAREDE INVISIVEL
+                    boat.transform.position += newPos;
                 dragOrigin += boatDirection * Time.deltaTime * DragForce(dragVector, b.dragToMaxSpeed, b.maxSpeed) * b.maxSpeed;
             }
         }
     }
-    
+
     public float ThrowLine(GameObject line, GameObject target, RodStatus r, GameObject player, float boatAngle)
     {
         Vector3 dragVector = AnalogStick();        
@@ -159,14 +165,29 @@ public class BoatController : MonoBehaviour
                 if (!anzolRaycastHit)
                 {
                     //Não jogou no barco
-                    player.transform.GetChild(0).gameObject.GetComponent<Animator>().SetTrigger("Throw");
-                    
-                    canInstantiateHook = true;
-                    hookEndPosition = anzol.transform.position;
-                    anzol.transform.position = player.transform.position;
-                    anzol.transform.localScale = new Vector3(0.1f, 0.1f, 1);
-                    hookSize = anzol.transform.localEulerAngles.x;
-                    //boatState = BoatState.Fishing;
+
+                    if (!anzolBounds.Intersects(new Bounds(new Vector3(6f, 15), new Vector3(3, 100)))
+                    && !anzolBounds.Intersects(new Bounds(new Vector3(-6f, 15), new Vector3(3, 100)))
+                    && !anzolBounds.Intersects(new Bounds(new Vector3(0f, -5f), new Vector3(20, 3)))
+                    && !anzolBounds.Intersects(new Bounds(new Vector3(0f, 45f), new Vector3(20, 3)))
+                    )
+                    {
+                        player.transform.GetChild(0).gameObject.GetComponent<Animator>().SetTrigger("Throw");
+
+                        canInstantiateHook = true;
+                        hookEndPosition = anzol.transform.position;
+                        anzol.transform.position = player.transform.position;
+                        anzol.transform.localScale = new Vector3(0.1f, 0.1f, 1);
+                        hookSize = anzol.transform.localEulerAngles.x;
+                        //boatState = BoatState.Fishing;
+                        Debug.Log("Opa tá certo");
+                    }
+                    else
+                    {
+                        DestroyImmediate(anzol);
+                        anzol = null;
+                    }
+                   
                 }
                 else
                 {
@@ -318,6 +339,8 @@ public class BoatController : MonoBehaviour
             {
                 PullLine(rs.reelPullForce);
                 actualFishResistence += Time.deltaTime * forceDecrement;
+                if (actualFishResistence > originalFishResistence)
+                    actualFishResistence = originalFishResistence;
             }
             else if (rs.force <= actualFishResistence && stick.y > holdRange)
             {

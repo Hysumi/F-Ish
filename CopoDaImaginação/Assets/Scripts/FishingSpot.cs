@@ -9,7 +9,7 @@ public class FishingSpot : MonoBehaviour {
     bool hit = false;
 
     //Mudar aqui depois o tamanho do rio
-    float riverRange = 4.5f;
+    float riverRange = 3.75f;
     bool outOfRange = false;
 
     GameObject anzol;
