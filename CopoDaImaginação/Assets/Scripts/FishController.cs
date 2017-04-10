@@ -1,5 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections.Generic;
+using System.Collections;
+using UnityEngine.UI;
 
 public class FishController : MonoBehaviour {
 
@@ -16,6 +18,11 @@ public class FishController : MonoBehaviour {
 
     RiverNumberFishAzure getFromAzure;
 
+    //TIMER OP
+    public int min, sec = 10;
+    public string sMin, sSec;
+    public bool isRunning;
+    public bool isPlay;
     //Rect boatArea;
     public Vector2 boatSummonRange;
     Bounds boatMaxCameraArea;
@@ -55,8 +62,10 @@ public class FishController : MonoBehaviour {
                 fishSpotList[i].gameObject.name = i + " SpotFish";
                 spotControl++;
             }
-
         }
+
+        HUD.pauseEvent += PauseTime;
+        PauseMenu.unPauseEvent += DepauseTime;
     }
 
     // Update is called once per frame
@@ -65,15 +74,28 @@ public class FishController : MonoBehaviour {
         if (getFromAzure.isReadCompleted==true)
         {
             //FAZER LOAD AQUI
+            isPlay = true;
+            StartTimer();
             FillFishList();
             getFromAzure.isReadCompleted = false;
-        }
+            
+        } 
 
         //ESTATICO 3
         if (actualTime >= SummonTime)
             FillFishSpotList();
         Temporizador();
         boatMaxCameraArea.center = Camera.main.transform.position;
+    }
+
+    public void PauseTime()
+    {
+        isRunning = false;
+    }
+
+    public void DepauseTime()
+    {
+        isRunning = true;
     }
 
     public void CleanTrash(FishStatus fs)
@@ -215,6 +237,42 @@ public class FishController : MonoBehaviour {
                     break;
             }
           
+        }
+    }
+
+    public void StartTimer()
+    {
+        isRunning = true;
+        StartCoroutine(ItsTime());
+    }
+
+    public IEnumerator ItsTime()
+    {
+        while (isPlay)
+        {
+            yield return new WaitForSeconds(1);
+            if (isRunning)
+            {
+                sec--;
+                if (sec < 0)
+                {
+                    min--;
+                    sec = 59;
+                    if (min < 0)
+                    {
+                        isRunning = false;
+                        min = 0;
+                        sec = 0;
+                        isPlay = false;
+                    }
+                }
+            }
+            sMin = "0" + min;
+            if (sec >= 0 && sec <= 9)
+                sSec = "0" + sec;
+            else sSec = sec.ToString();
+
+            GameObject.Find("Timer").GetComponent<Text>().text = "Time Left: " + sMin + ":" + sSec;
         }
     }
 }
