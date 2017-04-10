@@ -12,6 +12,9 @@ public class BoatController : MonoBehaviour
         Fishing = 2,
         Hooked = 3
     }
+    public Image currentFishResistence;
+    public Image currentReelResistence;
+    public GameObject bars;
 
     public delegate void Pescou(Item novoItem);
     public static event Pescou pescouPeixe;
@@ -86,12 +89,13 @@ public class BoatController : MonoBehaviour
     float originalReelResistence, actualReelResistence;
     int actualBoatCapacity = 0;
        
-    public GameObject barras;
+    //public GameObject barras;
     GameObject _fishBar, _rodBar;
     Vector3 _arrowSpacing;
 
     public void BoatMovement(GameObject boat, GameObject player, BoatStatus b)
     {
+        bars.SetActive(false);
         if (Mathf.Abs(player.transform.localEulerAngles.z) > 10)
         {
             SoftRotation(0, 300, player);
@@ -99,8 +103,8 @@ public class BoatController : MonoBehaviour
         else
         {
             player.transform.localEulerAngles = Vector3.zero;
-            _fishBar = barras.transform.GetChild(0).gameObject;
-            _rodBar = barras.transform.GetChild(1).gameObject;
+           // _fishBar = barras.transform.GetChild(0).gameObject;
+          //  _rodBar = barras.transform.GetChild(1).gameObject;
 
             boatArea = boat.GetComponent<BoxCollider2D>().bounds;
             Vector2 dragVector = AnalogStick();
@@ -131,8 +135,10 @@ public class BoatController : MonoBehaviour
 
     public float ThrowLine(GameObject line, GameObject target, RodStatus r, GameObject player, float boatAngle)
     {
+        bars.SetActive(false);
+
         Vector3 dragVector = AnalogStick();        
-        barras.transform.position = new Vector3(barras.transform.position.x, barras.transform.position.y, -20);
+        //barras.transform.position = new Vector3(barras.transform.position.x, barras.transform.position.y, -20);
         if (isDragging && !canInstantiateHook)
         {
             isHoldLine = true;
@@ -271,10 +277,16 @@ public class BoatController : MonoBehaviour
             else if(_reactionTimmer <= reactionTime)
             {
                 fishingSpot.GetComponent<Animator>().speed = 2;
+                bars.SetActive(true);
+
+                if(this.gameObject.transform.position.x - fishingSpot.transform.position.x > 0)
+                    bars.GetComponent<RectTransform>().anchoredPosition = new Vector2(0, 0);
+                else
+                    bars.GetComponent<RectTransform>().anchoredPosition = new Vector2(-850, 0);
                 boatState = BoatState.Hooked;
                 _reactionTimmer = 0;
                 isHooked = false;
-                barras.transform.position = new Vector3(barras.transform.position.x, barras.transform.position.y, 0);
+                //barras.transform.position = new Vector3(barras.transform.position.x, barras.transform.position.y, 0);
             }
             if (_reactionTimmer > reactionTime)
             {
@@ -355,8 +367,10 @@ public class BoatController : MonoBehaviour
                 if (actualFishResistence <= 0)
                     actualFishResistence = 0;
             }
-            _fishBar.transform.GetChild(0).transform.localScale = new Vector3(_fishBar.transform.GetChild(0).transform.localScale.x, actualFishResistence / originalFishResistence);
-            _rodBar.transform.GetChild(0).transform.localScale = new Vector3(_rodBar.transform.GetChild(0).transform.localScale.x, actualReelResistence / originalReelResistence);
+            // _fishBar.transform.GetChild(0).transform.localScale = new Vector3(_fishBar.transform.GetChild(0).transform.localScale.x, actualFishResistence / originalFishResistence);
+            // _rodBar.transform.GetChild(0).transform.localScale = new Vector3(_rodBar.transform.GetChild(0).transform.localScale.x, actualReelResistence / originalReelResistence);
+            currentFishResistence.rectTransform.localScale = new Vector3(1, actualFishResistence / originalFishResistence, 1);
+            currentReelResistence.rectTransform.localScale = new Vector3(1, actualReelResistence / originalReelResistence, 1);
 
         }
     }
@@ -542,7 +556,7 @@ public class BoatController : MonoBehaviour
                     fs.listaPeixes[i].chanceAppear *= FishingBonusChance;
                 else fs.listaPeixes[i].chanceAppear /= FishingBonusChance;
             }
-            Debug.Log(fs.listaPeixes[i].chanceAppear);
+            //Debug.Log(fs.listaPeixes[i].chanceAppear);
             chance += fs.listaPeixes[i].chanceAppear;
         }
         return (chance);
