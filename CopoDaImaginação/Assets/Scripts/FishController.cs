@@ -129,7 +129,7 @@ public class FishController : MonoBehaviour {
             {
                 //GAMBIARRA 4
                 Vector3 point = new Vector3(Random.Range(-4f, 4f), Random.Range(-1f, 40f), 0);
-                Debug.Log(point);
+                //Debug.Log(point);
                 Ray ray = new Ray(point, -Vector3.forward);
 
                 if (boatMaxCameraArea.IntersectRay(ray))

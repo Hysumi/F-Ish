@@ -16,6 +16,12 @@ public class BoatController : MonoBehaviour
     public Image currentReelResistence;
     public GameObject bars;
 
+    public AudioClip anzolDropAudio;
+    public AudioClip reelPullAudio;
+    public AudioClip fisgouAudio;
+
+    bool isPulling = false;
+    bool fisgou = false;
     public delegate void Pescou(Item novoItem);
     public static event Pescou pescouPeixe;
 
@@ -179,7 +185,6 @@ public class BoatController : MonoBehaviour
                     )
                     {
                         player.transform.GetChild(0).gameObject.GetComponent<Animator>().SetTrigger("Throw");
-
                         canInstantiateHook = true;
                         hookEndPosition = anzol.transform.position;
                         anzol.transform.position = player.transform.position;
@@ -219,6 +224,7 @@ public class BoatController : MonoBehaviour
                 anzol.transform.localScale = new Vector3(0.2f, 0.2f, 1);
                 anim.SetTrigger("Cutucou");
                 boatState = BoatState.Fishing;
+                AudioManager.instance.PlaySound(anzolDropAudio, anzol.transform.position);
                 canInstantiateHook = false;
             }
             else
@@ -271,6 +277,11 @@ public class BoatController : MonoBehaviour
         }
         else //(boatState == BoatState.Hooked)
         {
+            if (!fisgou)
+            {
+                AudioManager.instance.PlaySound(fisgouAudio, anzol.transform.position);
+                fisgou = true;
+            }
             AnalogStick();
             if(!Input.GetMouseButtonDown(0))
                 _reactionTimmer += Time.deltaTime;
@@ -443,8 +454,16 @@ public class BoatController : MonoBehaviour
     {
 
         float yDragForce = AnalogStick().y;
-        if (yDragForce < 0)
+        if (yDragForce <= 0)
+        {
+            isPulling = false;
             yDragForce = 0;
+        }
+        else if (!isPulling)
+        {
+            AudioManager.instance.PlaySound(reelPullAudio, anzol.transform.position);
+            isPulling = true;
+        }
         if (anzol)
         {
             anzol.transform.position -= new Vector3(lineDirection.x, lineDirection.y, 0) * reelPullForce * yDragForce / 10 * Time.deltaTime;
@@ -500,6 +519,7 @@ public class BoatController : MonoBehaviour
 
     void ResetFishBattle() 
     {
+        fisgou = false;
         DestroyImmediate(fishingSpot);
         fishingSpot = null;
         DestroyImmediate(anzol);
