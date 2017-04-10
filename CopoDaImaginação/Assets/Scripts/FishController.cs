@@ -62,7 +62,7 @@ public class FishController : MonoBehaviour {
     // Update is called once per frame
     void Update ()
     {
-        if (getFromAzure.isReadCompleted)
+        if (getFromAzure.isReadCompleted==true)
         {
             //FAZER LOAD AQUI
             FillFishList();
