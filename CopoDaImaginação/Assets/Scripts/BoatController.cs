@@ -129,7 +129,7 @@ public class BoatController : MonoBehaviour
                 boatDirection = player.transform.position - boat.transform.position;
                 Vector3 newPos = boatDirection * Time.deltaTime * DragForce(dragVector, b.dragToMaxSpeed, b.maxSpeed) * b.maxSpeed;
                 if (!boatArea.Intersects(new Bounds(new Vector3(5f, 15), new Vector3(1, 100)))
-                    && !boatArea.Intersects(new Bounds(new Vector3(5f, 15), new Vector3(1, 100)))
+                    && !boatArea.Intersects(new Bounds(new Vector3(-5f, 15), new Vector3(1, 100)))
                     && !boatArea.Intersects(new Bounds(new Vector3(0f, -4f), new Vector3(20, 1)))
                     && !boatArea.Intersects(new Bounds(new Vector3(0f, 44f), new Vector3(20, 1)))
                     ) //PAREDE INVISIVEL
